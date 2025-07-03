@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:health_tracker/screens/getStartedPage.dart';
+import 'package:health_tracker/screens/get_started_page.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -23,4 +23,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

@@ -7,17 +7,40 @@ class UserTypeScreen extends StatefulWidget {
 
 class _UserTypeScreenState extends State<UserTypeScreen> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
   String? _userType; // "self" or "caregiver"
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
   void _submit() {
-    final name = _nameController.text.trim();
-    if (name.isEmpty || _userType == null) {
+    final fullName = _nameController.text.trim();
+    final email = _emailController.text.trim();
+
+    if (fullName.isEmpty || _userType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please enter your name and select user type')),
       );
       return;
     }
-    print('Name: $name, UserType: $_userType');
+
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+
+    if (email.isEmpty || !emailRegex.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a valid email address')),
+      );
+      return;
+    }
+
+    final firstName = fullName.split(' ').first;
+
+    print('Name: $fullName,firstName: $firstName, UserType: $_userType');
     // Add navigation or logic here
   }
 
@@ -37,7 +60,20 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Enter your name',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Enter your email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                 ),
                 SizedBox(height: 24),
@@ -68,21 +104,21 @@ class _UserTypeScreenState extends State<UserTypeScreen> {
                 ),
                 SizedBox(height: 24),
                 SizedBox(
-                  width: double.infinity, // button fills width of parent container
+                  width:
+                      double.infinity, // button fills width of parent container
                   child: ElevatedButton(
                     onPressed: _submit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 20), // more height
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                      ), // more height
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: const Text(
-                      "Next",
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    child: const Text("Next", style: TextStyle(fontSize: 18)),
                   ),
                 ),
               ],

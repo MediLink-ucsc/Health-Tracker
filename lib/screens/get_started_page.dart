@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/screens/userTypeScreen.dart';
+import 'package:health_tracker/screens/user_login_screen.dart';
 
 class GetStartedPage extends StatelessWidget {
   const GetStartedPage({super.key});
@@ -47,7 +47,10 @@ class GetStartedPage extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 24,
+                ),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -83,18 +86,23 @@ class GetStartedPage extends StatelessWidget {
                           // Navigate to next screen
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => UserTypeScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => UserLoginScreen(),
+                            ),
                           );
-
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: const Text("Get Started"),
+                        child: const Text(
+                          "Get Started",
+                          style: TextStyle(fontSize: 18),
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
