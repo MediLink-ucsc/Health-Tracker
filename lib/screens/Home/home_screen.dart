@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../Profile/profile_screen.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -10,61 +12,68 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // Handle Add button tap (e.g., open metrics input)
+      //   },
+      //   backgroundColor: primaryColor,
+      //   elevation: 4,
+      //   child: const Icon(Icons.add, size: 32),
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        color: const Color(0xFFE0F2F1),
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              color: primaryColor,
+              iconSize: 28,
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.assignment),
+              color: Colors.grey.shade700,
+              iconSize: 28,
+              onPressed: () {},
+            ),
+            // Empty space for the notch
+            const SizedBox(width: 48),
+            IconButton(
+              icon: const Icon(Icons.local_hospital),
+              color: Colors.grey.shade700,
+              iconSize: 28,
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.person),
+              color: Colors.grey.shade700,
+              iconSize: 28,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Handle Add button tap (e.g., open metrics input)
+          // Handle Add button tap
         },
         backgroundColor: primaryColor,
         elevation: 4,
-        child: const Icon(Icons.add, size: 32),
+        child: const Icon(Icons.add, size: 28), // SAME SIZE as other icons
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Left icons
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.home),
-                    color: primaryColor,
-                    iconSize: 30,
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.assignment),
-                    color: Colors.grey,
-                    iconSize: 30,
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-              // Right icons
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.local_hospital),
-                    color: Colors.grey,
-                    iconSize: 30,
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.person),
-                    color: Colors.grey,
-                    iconSize: 30,
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -76,9 +85,9 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundImage: NetworkImage(
-                      'https://via.placeholder.com/150',
-                    ),
+
+                    backgroundColor: Color(0xFF0D9488),
+                    backgroundImage: AssetImage('assets/icon/female_user.png'),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -110,6 +119,7 @@ class HomeScreen extends StatelessWidget {
 
               // Family Member Card
               Card(
+                color: const Color(0xFFE0F2F1),
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -298,7 +308,7 @@ class _QuickAccessItem extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(iconAsset, height: 40, width: 40),
+              Image.asset(iconAsset, height: 50, width: 50),
               const SizedBox(height: 8),
               Text(
                 label,
