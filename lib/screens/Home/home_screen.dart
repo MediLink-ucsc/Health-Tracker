@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../Components/custom_bottom_nav.dart';
 import '../Profile/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -21,58 +22,7 @@ class HomeScreen extends StatelessWidget {
       //   child: const Icon(Icons.add, size: 32),
       // ),
       // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFFE0F2F1),
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.home),
-              color: primaryColor,
-              iconSize: 28,
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.assignment),
-              color: Colors.grey.shade700,
-              iconSize: 28,
-              onPressed: () {},
-            ),
-            // Empty space for the notch
-            const SizedBox(width: 48),
-            IconButton(
-              icon: const Icon(Icons.local_hospital),
-              color: Colors.grey.shade700,
-              iconSize: 28,
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.person),
-              color: Colors.grey.shade700,
-              iconSize: 28,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Handle Add button tap
-        },
-        backgroundColor: primaryColor,
-        elevation: 4,
-        child: const Icon(Icons.add, size: 28), // SAME SIZE as other icons
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: CustomBottomNavBar(currentIndex: 0),
 
       body: SafeArea(
         child: SingleChildScrollView(
