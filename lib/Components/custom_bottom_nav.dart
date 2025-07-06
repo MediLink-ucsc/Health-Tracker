@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/screens/Clinic/clinical_records.dart';
 import 'package:health_tracker/screens/Metrics/input_metrics_screen.dart';
+import 'package:health_tracker/screens/Metrics/metrices_summary_section.dart';
 import 'package:health_tracker/screens/Reports/lab_reports_screen.dart';
 import '../screens/Home/home_screen.dart';
 import '../screens/Profile/profile_screen.dart';
@@ -93,7 +94,7 @@ class CustomBottomNavBar extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const InputMetricsScreen(),
+                  builder: (_) => const InputMetricScreen(),
                   // e.g., AddMetricsScreen()
                 ),
               );
