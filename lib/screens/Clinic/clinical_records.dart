@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../Components/custom_bottom_nav.dart';
+
 class ClinicalRecord {
   final DateTime date;
   final String doctor;
@@ -66,6 +68,7 @@ class _ClinicalCalendarScreenState extends State<ClinicalCalendarScreen> {
         title: const Text('Clinical Visits'),
         backgroundColor: primaryColor,
       ),
+      bottomNavigationBar: CustomBottomNavBar(currentIndex: 2),
       body: Column(
         children: [
           TableCalendar<ClinicalRecord>(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/screens/Clinic/clinical_records.dart';
 import 'package:health_tracker/screens/Metrics/input_metrics_screen.dart';
+import 'package:health_tracker/screens/Reports/lab_reports_screen.dart';
 import '../screens/Home/home_screen.dart';
 import '../screens/Profile/profile_screen.dart';
 // import '../AddMetrics/add_metrics_screen.dart'; // example destination
@@ -42,6 +43,12 @@ class CustomBottomNavBar extends StatelessWidget {
                 color: currentIndex == 1 ? primaryColor : Colors.grey.shade700,
                 iconSize: 28,
                 onPressed: () {
+                  if (currentIndex != 1) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => LabReportsScreen()),
+                    );
+                  }
                   // Add your navigation
                 },
               ),
@@ -51,7 +58,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 color: currentIndex == 2 ? primaryColor : Colors.grey.shade700,
                 iconSize: 28,
                 onPressed: () {
-                  if (currentIndex != 0) {
+                  if (currentIndex != 2) {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
