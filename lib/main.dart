@@ -10,6 +10,7 @@ void main() {
           Brightness.dark, // Dark icons on light background
     ),
   );
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
