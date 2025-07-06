@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/screens/Clinic/clinical_records.dart';
 import 'package:health_tracker/screens/Metrics/input_metrics_screen.dart';
 import '../screens/Home/home_screen.dart';
 import '../screens/Profile/profile_screen.dart';
@@ -50,6 +51,14 @@ class CustomBottomNavBar extends StatelessWidget {
                 color: currentIndex == 2 ? primaryColor : Colors.grey.shade700,
                 iconSize: 28,
                 onPressed: () {
+                  if (currentIndex != 0) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ClinicalCalendarScreen(),
+                      ),
+                    );
+                  }
                   // Add your navigation
                 },
               ),
