@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../Components/custom_bottom_nav.dart';
+
 class MetricsSummaryScreen extends StatefulWidget {
   const MetricsSummaryScreen({super.key});
 
@@ -77,6 +79,7 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
     List<HorizontalRangeAnnotation>? ranges,
   }) {
     final filtered = _getFilteredData(data);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),

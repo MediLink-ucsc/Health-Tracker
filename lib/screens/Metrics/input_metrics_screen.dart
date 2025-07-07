@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/screens/Metrics/record_metrices_section.dart';
 
+import '../../Components/custom_bottom_nav.dart';
 import 'metrices_summary_section.dart';
 
 void main() {
@@ -29,6 +30,7 @@ class InputMetricScreen extends StatelessWidget {
             ],
           ),
         ),
+        bottomNavigationBar: CustomBottomNavBar(currentIndex: 4),
         body: const TabBarView(
           children: [MetricsSummaryScreen(), RecordMetricsScreen()],
         ),
