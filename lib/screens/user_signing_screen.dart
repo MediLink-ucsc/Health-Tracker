@@ -6,20 +6,29 @@ class UserSigningScreen extends StatefulWidget {
 }
 
 class _UserSigningScreenState extends State<UserSigningScreen> {
-  String? _userType; // "self" or "caregiver"
-  final TextEditingController _emailController = TextEditingController();
+  // Controllers
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
 
-  int _step = 1; // 1=userType, 2=email, 3=name+age if needed
+  // Step and state
+  int _step = 1; // 1=UserType, 2=Phone, 3=OTP, 4=Details
+  bool _otpSent = false;
+  bool _otpVerified = false;
 
-  bool _emailRegistered = false; // simulate email check
+  // Other selections
+  String? _userType; // "self" or "caregiver"
+  String? _gender;
+  String? _bloodType;
+  String? _height;
 
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _phoneController.dispose();
+    _otpController.dispose();
     _nameController.dispose();
     _ageController.dispose();
     super.dispose();
@@ -37,66 +46,67 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
         _step = 2;
       });
     } else if (_step == 2) {
-      final email = _emailController.text.trim();
-      final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-      if (email.isEmpty || !emailRegex.hasMatch(email)) {
+      if (_phoneController.text.trim().isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid email address')),
+          const SnackBar(content: Text('Please enter phone number')),
         );
         return;
       }
-
-      // Simulate email check - here: emails with "test" are registered
-      if (email.contains("test")) {
-        _emailRegistered = true;
-        // Proceed to submit directly
-        _submit(registeredUser: true);
-      } else {
-        // Email NOT registered, ask for name and age
-        _emailRegistered = false;
-        setState(() {
-          _step = 3;
-        });
-      }
+      setState(() {
+        _otpSent = true;
+        _step = 3;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('OTP sent to your phone')));
     } else if (_step == 3) {
+      if (_otpController.text.trim() == '1234') {
+        setState(() {
+          _otpVerified = true;
+          _step = 4;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Phone verified')));
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invalid OTP')));
+      }
+    } else if (_step == 4) {
       if (!_formKey.currentState!.validate()) return;
-      _submit(registeredUser: false);
+      _submit();
     }
   }
 
-  void _submit({required bool registeredUser}) {
-    final email = _emailController.text.trim();
-    final userType = _userType ?? '';
+  void _submit() {
+    final name = _nameController.text.trim();
+    final age = _ageController.text.trim();
+    final phone = _phoneController.text.trim();
 
-    if (registeredUser) {
-      // For registered users, just print info and proceed
-      print('Registered user: Email: $email, UserType: $userType');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Login successful!')));
-      // Navigate or further logic here
-    } else {
-      // For new user, get name and age
-      final name = _nameController.text.trim();
-      final age = _ageController.text.trim();
-      final firstName = name.split(' ').first;
+    print(
+      'Signed Up Info:\n'
+      'Name: $name\n'
+      'Age: $age\n'
+      'Phone: $phone\n'
+      'Height: $_height\n'
+      'Blood Type: $_bloodType\n'
+      'Gender: $_gender\n'
+      'User Type: $_userType',
+    );
 
-      print(
-        'New user info: Name: $name,First Name: $firstName, Age: $age, Email: $email, UserType: $userType',
-      );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Registration successful!')));
-      // Navigate or further logic here
-    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Registration complete!')));
   }
 
+  // Step 1: User Type
   Widget _buildUserTypeStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Are you using the app for yourself or for someone else?',
+          'Who are you using the app for?',
           style: TextStyle(fontSize: 18),
         ),
         ListTile(
@@ -104,11 +114,7 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
           leading: Radio<String>(
             value: 'self',
             groupValue: _userType,
-            onChanged: (value) {
-              setState(() {
-                _userType = value;
-              });
-            },
+            onChanged: (value) => setState(() => _userType = value),
           ),
         ),
         ListTile(
@@ -116,49 +122,96 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
           leading: Radio<String>(
             value: 'caregiver',
             groupValue: _userType,
-            onChanged: (value) {
-              setState(() {
-                _userType = value;
-              });
-            },
+            onChanged: (value) => setState(() => _userType = value),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEmailStep() {
+  // Step 2: Phone
+  Widget _buildPhoneStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Enter your email address: ',
-          style: TextStyle(fontSize: 18),
-        ),
+        const Text('Enter your phone number:', style: TextStyle(fontSize: 18)),
         const SizedBox(height: 12),
         TextField(
-          controller: _emailController,
-          keyboardType: TextInputType.emailAddress,
+          controller: _phoneController,
+          keyboardType: TextInputType.phone,
           decoration: InputDecoration(
-            labelText: 'Email',
+            labelText: 'Phone Number',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 20,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal.shade700,
+              foregroundColor: Colors.white,
+              textStyle: const TextStyle(fontSize: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Send OTP'),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildNameAgeStep() {
+  // Step 3: OTP
+  Widget _buildOtpStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Enter the OTP:', style: TextStyle(fontSize: 18)),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _otpController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: 'OTP',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal.shade700,
+              foregroundColor: Colors.white,
+              textStyle: const TextStyle(fontSize: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Verify OTP'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Step 4: Details
+  Widget _buildDetailsStep() {
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // const Text(
-          //   'It looks like your email is not registered yet. Please enter your details:',
-          //   style: TextStyle(fontSize: 18),
-          // ),
-          const SizedBox(height: 12),
           TextFormField(
             controller: _nameController,
             decoration: InputDecoration(
@@ -166,10 +219,14 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 20,
+              ),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter your full name';
+                return 'Please enter your name';
               }
               return null;
             },
@@ -183,16 +240,66 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 20,
+              ),
             ),
             validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your age';
-              }
-              if (int.tryParse(value.trim()) == null) {
-                return 'Please enter a valid number';
+              if (value == null || int.tryParse(value.trim()) == null) {
+                return 'Enter a valid age';
               }
               return null;
             },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            decoration: InputDecoration(
+              labelText: 'Height (cm) - optional',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 20,
+              ),
+            ),
+            onChanged: (val) => _height = val,
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Blood Type (optional)',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 20,
+              ),
+            ),
+            items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+                .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                .toList(),
+            onChanged: (val) => _bloodType = val,
+          ),
+          const SizedBox(height: 16),
+          const Text("Gender:"),
+          ListTile(
+            title: const Text("Male"),
+            leading: Radio<String>(
+              value: "Male",
+              groupValue: _gender,
+              onChanged: (val) => setState(() => _gender = val),
+            ),
+          ),
+          ListTile(
+            title: const Text("Female"),
+            leading: Radio<String>(
+              value: "Female",
+              groupValue: _gender,
+              onChanged: (val) => setState(() => _gender = val),
+            ),
           ),
         ],
       ),
@@ -202,33 +309,50 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
   @override
   Widget build(BuildContext context) {
     Widget content;
-
     if (_step == 1) {
       content = _buildUserTypeStep();
     } else if (_step == 2) {
-      content = _buildEmailStep();
+      content = _buildPhoneStep();
+    } else if (_step == 3) {
+      content = _buildOtpStep();
     } else {
-      content = _buildNameAgeStep();
+      content = _buildDetailsStep();
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('User Registration')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(child: content),
+      appBar: AppBar(
+        title: const Text('User Registration'),
+        backgroundColor: Colors.teal.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: Container(
+        color: const Color(0xFFF5F7F9),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [content],
+            ),
+          ),
+        ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 55,
           child: ElevatedButton(
             onPressed: _nextStep,
-            child: Text(
-              _step == 3 || (_step == 2 && _emailRegistered)
-                  ? 'Submit'
-                  : 'Next',
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal.shade700,
+              foregroundColor: Colors.white,
+              textStyle: const TextStyle(fontSize: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
+            child: Text(_step == 4 ? 'Submit' : 'Next'),
           ),
         ),
       ),

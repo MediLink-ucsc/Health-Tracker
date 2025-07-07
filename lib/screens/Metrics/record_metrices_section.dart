@@ -48,10 +48,6 @@ class _RecordMetricsScreenState extends State<RecordMetricsScreen> {
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFF0D9488);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Record Daily Metrics'),
-        backgroundColor: primaryColor,
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(

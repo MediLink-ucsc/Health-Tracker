@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/screens/Home/home_screen.dart';
 import 'package:health_tracker/screens/user_signing_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Simulated database of registered users
 final Map<String, String> registeredUsers = {
@@ -21,6 +22,26 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLogin();
+  }
+
+  Future<void> _loadSavedLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rememberMe = prefs.getBool('remember_me') ?? false;
+    if (rememberMe) {
+      final savedPhone = prefs.getString('saved_phone') ?? '';
+      final savedPassword = prefs.getString('saved_password') ?? '';
+      setState(() {
+        _rememberMe = true;
+        _phoneController.text = savedPhone;
+        _passwordController.text = savedPassword;
+      });
+    }
+  }
+
   void _login() {
     if (_formKey.currentState!.validate()) {
       final phone = _phoneController.text.trim();
@@ -37,7 +58,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
       }
 
       if (_rememberMe) {
-        // Save preference if needed
+        _saveLogin(phone, password);
       }
 
       Navigator.pushReplacement(
@@ -58,6 +79,13 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
     _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveLogin(String phone, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('remember_me', true);
+    await prefs.setString('saved_phone', phone);
+    await prefs.setString('saved_password', password);
   }
 
   @override
@@ -168,7 +196,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                               _rememberMe = value ?? false;
                             });
                           },
-                          activeColor: accentColor,
+                          // activeColor: Colors.white,
                         ),
                         const Text('Remember Me'),
                       ],

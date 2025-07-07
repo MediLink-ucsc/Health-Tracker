@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/screens/user_login_screen.dart';
 
-class GetStartedPage extends StatefulWidget {
-  const GetStartedPage({super.key});
+class GetStartedScreen extends StatefulWidget {
+  const GetStartedScreen({super.key});
 
   @override
-  State<GetStartedPage> createState() => _GetStartedPageState();
+  State<GetStartedScreen> createState() => _GetStartedScreenState();
 }
 
-class _GetStartedPageState extends State<GetStartedPage> {
+class _GetStartedScreenState extends State<GetStartedScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
   static const primaryColor = Color(0xFF0D9488);
-  static const accentColor = Color(0xFFEA580C);
+  static const accentColor = Color(0xFFF1BE26);
 
   final List<_IntroPage> _pages = const [
     _IntroPage(
       title: "Clinical Use",
       description:
           "Easily manage your clinical appointments and stay connected with your healthcare providers.",
-      imageAsset: "assets/icon/phone_use.png",
+      imageAsset: "assets/icon/doctor_2.png",
     ),
     _IntroPage(
       title: "Lab Report Viewer",
       description:
           "Access and review your lab reports anytime, anywhere, all in one place.",
-      imageAsset: "assets/icon/weight_tracking.png",
+      imageAsset: "assets/icon/lab_report_3.png",
     ),
     _IntroPage(
       title: "Daily Health Records",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_tracker/screens/get_started_page.dart';
+import 'package:health_tracker/screens/splash_screen.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   static const Color primaryColor = Color(0xFF0D9488); // Teal green
-  static const Color accentColor = Color(0xFFEA580C); // Orange
+  static const Color accentColor = Color(0xFFF1BE26); // Orange
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +27,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(
-          0xFFF8FAF9,
-        ), // Soft light background
+        scaffoldBackgroundColor: const Color(0xFFF8FAF9),
+        // Soft light background
         colorScheme: ColorScheme.light(
           primary: primaryColor,
           secondary: accentColor,
@@ -59,10 +59,14 @@ class MyApp extends StatelessWidget {
           filled: true,
         ),
         checkboxTheme: CheckboxThemeData(
-          fillColor: MaterialStateProperty.all(accentColor),
+          fillColor: WidgetStateProperty.all(Colors.transparent),
+          checkColor: WidgetStateProperty.all(
+            Color(0xFF0D9488),
+          ), // your primaryColor
+          side: BorderSide(color: Color(0xFF0D9488), width: 2),
         ),
       ),
-      home: const GetStartedPage(),
+      home: const SplashScreen(),
     );
   }
 }

@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                     radius: 28,
 
                     backgroundColor: Color(0xFF0D9488),
-                    backgroundImage: AssetImage('assets/icon/female_user.png'),
+                    backgroundImage: AssetImage('assets/icon/user_2.png'),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
