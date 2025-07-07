@@ -43,7 +43,12 @@ class ProfileScreen extends StatelessWidget {
                       Icon(Icons.cake, size: 16, color: Colors.grey),
                       SizedBox(width: 4),
                       Text('Age: 24'),
-                      SizedBox(width: 16),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
                       Icon(Icons.female, size: 16, color: Colors.grey),
                       SizedBox(width: 4),
                       Text('Female'),
@@ -56,6 +61,15 @@ class ProfileScreen extends StatelessWidget {
                       Icon(Icons.bloodtype, size: 16, color: Colors.grey),
                       SizedBox(width: 4),
                       Text('Blood Group: O-'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.height, size: 16, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text('Height: 153cm'),
                     ],
                   ),
                 ],
@@ -102,7 +116,7 @@ class ProfileScreen extends StatelessWidget {
               value: 'Thiran Sasanka',
             ),
             const SizedBox(height: 12),
-            _InfoRow(icon: Icons.group, label: 'Relation', value: 'Bro'),
+            _InfoRow(icon: Icons.group, label: 'Relation', value: 'Brother'),
             const SizedBox(height: 12),
             _InfoRow(
               icon: Icons.phone_android,

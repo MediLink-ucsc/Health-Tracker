@@ -47,6 +47,7 @@ class EditProfileScreen extends StatelessWidget {
                     ),
                     _buildInputField(label: 'Gender', initialValue: 'Female'),
                     _buildInputField(label: 'Blood Group', initialValue: 'O-'),
+                    _buildInputField(label: 'Height', initialValue: '153cm'),
                   ],
                 ),
               ),
@@ -111,7 +112,10 @@ class EditProfileScreen extends StatelessWidget {
                       label: 'Name',
                       initialValue: 'Thiran Sasanka',
                     ),
-                    _buildInputField(label: 'Relation', initialValue: 'Wife'),
+                    _buildInputField(
+                      label: 'Relation',
+                      initialValue: 'Brother',
+                    ),
                     _buildInputField(
                       label: 'Contact Number',
                       initialValue: '+94 77 9876543',
