@@ -19,7 +19,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
     _IntroPage(
       title: "Clinical Use",
       description:
-          "Easily manage your clinical appointments and stay connected with your healthcare providers.",
+          "View your clinic schedules, visit details, and upcoming appointment dates.",
       imageAsset: "assets/icon/doctor_2.png",
     ),
     _IntroPage(
