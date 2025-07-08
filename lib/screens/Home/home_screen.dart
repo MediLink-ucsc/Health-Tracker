@@ -111,71 +111,43 @@ class HomeScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.person, color: accentColor),
+                      Icon(Icons.analytics, color: accentColor),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: const [
                             Text(
-                              'Thiran Sasanka',
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              'Last Recorded Activity',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
                             ),
-                            Text('Wife'),
+                            SizedBox(height: 4),
+                            Text(
+                              'Blood Sugar: 120 mg/dL',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Date: 2025-07-07',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'STL1234A',
-                          style: TextStyle(color: primaryColor),
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
+
               const SizedBox(height: 16),
-
-              // Last Recorded Activity Dropdown
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: 'Last Recorded Activity',
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Last Recorded Activity',
-                        child: Text('Last Recorded Activity'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Activity 1',
-                        child: Text('Activity 1'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Activity 2',
-                        child: Text('Activity 2'),
-                      ),
-                    ],
-                    onChanged: (value) {},
-                  ),
-                ),
-              ),
-              const SizedBox(height: 28),
-
               // Quick Access Section
               const Text(
                 'Quick Access',
