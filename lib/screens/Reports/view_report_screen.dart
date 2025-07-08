@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../Components/custom_bottom_nav.dart';
+import '../../Components/logout.dart';
 import '../../models/lab_report.dart';
 
 // class LabReport {
@@ -28,6 +29,34 @@ class ViewReportScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('View Report'),
         backgroundColor: primaryColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text('Are you sure you want to log out?'),
+                  actions: [
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: const Text('Logout'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        appLogout(context);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: CustomBottomNavBar(currentIndex: 1),
       body: Padding(

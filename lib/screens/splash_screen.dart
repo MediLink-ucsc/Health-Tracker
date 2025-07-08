@@ -27,9 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Center(
         child: Image.asset(
-          'assets/icon/health_tracker_loading_2.png', // make sure this image exists
-          width: 1024,
-          height: 1536,
+          'assets/icon/health_tracker_logo.png', // make sure this image exists
+          width: 500,
+          height: 500,
         ),
       ),
     );

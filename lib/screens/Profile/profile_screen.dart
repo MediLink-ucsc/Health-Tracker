@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/screens/user_login_screen.dart';
 
 import '../../Components/custom_bottom_nav.dart';
 import 'edit_profile_screen.dart';
@@ -9,13 +10,42 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFF0D9488);
-    const accentColor = Color(0xFFEA580C);
+    const accentColor = Color(0xFFF1BE26);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Profile'),
         backgroundColor: primaryColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text('Are you sure you want to log out?'),
+                  actions: [
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: const Text('Logout'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _logout(context);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
+
       bottomNavigationBar: CustomBottomNavBar(currentIndex: 3),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -156,6 +186,47 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
+            // Inside the Column after Edit Profile button
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // Confirm before logout
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Logout'),
+                      content: const Text('Are you sure you want to log out?'),
+                      actions: [
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        TextButton(
+                          child: const Text('Logout'),
+                          onPressed: () {
+                            Navigator.pop(context); // Close the dialog
+                            _logout(context); // Call logout
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.logout),
+                label: const Text('Logout'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: accentColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 32,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -193,4 +264,13 @@ class _InfoRow extends StatelessWidget {
       ],
     );
   }
+}
+
+void _logout(BuildContext context) {
+  // Example: Navigate to login screen and clear stack
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => const UserLoginScreen()),
+    (route) => false,
+  );
 }

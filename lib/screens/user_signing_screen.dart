@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/screens/user_login_screen.dart';
 
 class UserSigningScreen extends StatefulWidget {
   @override
@@ -13,12 +14,12 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
   final TextEditingController _ageController = TextEditingController();
 
   // Step and state
-  int _step = 1; // 1=UserType, 2=Phone, 3=OTP, 4=Details
+  int _step = 2; // Starts from Phone step
   bool _otpSent = false;
   bool _otpVerified = false;
 
   // Other selections
-  String? _userType; // "self" or "caregiver"
+  String? _userType;
   String? _gender;
   String? _bloodType;
   String? _height;
@@ -35,30 +36,27 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
   }
 
   void _nextStep() {
-    if (_step == 1) {
-      if (_userType == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select user type')),
-        );
-        return;
+    if (_step == 2) {
+      if (!_otpSent) {
+        // Send OTP
+        if (_phoneController.text.trim().isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please enter phone number')),
+          );
+          return;
+        }
+        setState(() {
+          _otpSent = true;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('OTP sent to your phone')));
+      } else {
+        // Proceed to OTP verification step
+        setState(() {
+          _step = 3;
+        });
       }
-      setState(() {
-        _step = 2;
-      });
-    } else if (_step == 2) {
-      if (_phoneController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter phone number')),
-        );
-        return;
-      }
-      setState(() {
-        _otpSent = true;
-        _step = 3;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('OTP sent to your phone')));
     } else if (_step == 3) {
       if (_otpController.text.trim() == '1234') {
         setState(() {
@@ -98,38 +96,14 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Registration complete!')));
-  }
 
-  // Step 1: User Type
-  Widget _buildUserTypeStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Who are you using the app for?',
-          style: TextStyle(fontSize: 18),
-        ),
-        ListTile(
-          title: const Text('I am using it for myself'),
-          leading: Radio<String>(
-            value: 'self',
-            groupValue: _userType,
-            onChanged: (value) => setState(() => _userType = value),
-          ),
-        ),
-        ListTile(
-          title: const Text('I am a caregiver using it for someone else'),
-          leading: Radio<String>(
-            value: 'caregiver',
-            groupValue: _userType,
-            onChanged: (value) => setState(() => _userType = value),
-          ),
-        ),
-      ],
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => UserLoginScreen()),
     );
   }
 
-  // Step 2: Phone
+  // Phone input step
   Widget _buildPhoneStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,28 +122,11 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal.shade700,
-              foregroundColor: Colors.white,
-              textStyle: const TextStyle(fontSize: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Send OTP'),
-          ),
-        ),
       ],
     );
   }
 
-  // Step 3: OTP
+  // OTP input step
   Widget _buildOtpStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,28 +141,11 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
           ),
         ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal.shade700,
-              foregroundColor: Colors.white,
-              textStyle: const TextStyle(fontSize: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Verify OTP'),
-          ),
-        ),
       ],
     );
   }
 
-  // Step 4: Details
+  // Details input step
   Widget _buildDetailsStep() {
     return Form(
       key: _formKey,
@@ -309,14 +249,22 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
   @override
   Widget build(BuildContext context) {
     Widget content;
-    if (_step == 1) {
-      content = _buildUserTypeStep();
-    } else if (_step == 2) {
+    if (_step == 2) {
       content = _buildPhoneStep();
     } else if (_step == 3) {
       content = _buildOtpStep();
     } else {
       content = _buildDetailsStep();
+    }
+
+    // Set dynamic button text
+    String buttonText;
+    if (_step == 2) {
+      buttonText = _otpSent ? 'Next' : 'Send OTP';
+    } else if (_step == 3) {
+      buttonText = 'Verify OTP';
+    } else {
+      buttonText = 'Submit';
     }
 
     return Scaffold(
@@ -352,7 +300,7 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: Text(_step == 4 ? 'Submit' : 'Next'),
+            child: Text(buttonText),
           ),
         ),
       ),

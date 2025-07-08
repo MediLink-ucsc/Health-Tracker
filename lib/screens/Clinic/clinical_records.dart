@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../Components/custom_bottom_nav.dart';
+import '../../Components/logout.dart';
 
 class ClinicalRecord {
   final DateTime date;
@@ -67,6 +68,34 @@ class _ClinicalCalendarScreenState extends State<ClinicalCalendarScreen> {
       appBar: AppBar(
         title: const Text('Clinical Visits'),
         backgroundColor: primaryColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text('Are you sure you want to log out?'),
+                  actions: [
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: const Text('Logout'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        appLogout(context);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: CustomBottomNavBar(currentIndex: 2),
       body: Column(
