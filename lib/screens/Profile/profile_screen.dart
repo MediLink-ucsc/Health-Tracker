@@ -135,7 +135,7 @@ class ProfileScreen extends StatelessWidget {
               'Emergency Contact',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: accentColor,
+                color: Colors.orange,
                 fontSize: 16,
               ),
             ),
@@ -161,7 +161,9 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
 
-            Center(
+            // Instead of Center(...), replace with:
+            SizedBox(
+              width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.push(
@@ -176,19 +178,17 @@ class ProfileScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 14,
-                    horizontal: 32,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
               ),
             ),
-            // Inside the Column after Edit Profile button
-            Center(
-              child: ElevatedButton.icon(
+            const SizedBox(height: 12), // spacing between buttons
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
                 onPressed: () {
                   // Confirm before logout
                   showDialog(
@@ -214,13 +214,10 @@ class ProfileScreen extends StatelessWidget {
                 },
                 icon: const Icon(Icons.logout),
                 label: const Text('Logout'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accentColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 14,
-                    horizontal: 32,
-                  ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: primaryColor,
+                  side: BorderSide(color: primaryColor, width: 2),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),

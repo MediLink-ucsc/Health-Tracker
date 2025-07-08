@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/Components/logout.dart';
 
 import '../../Components/custom_bottom_nav.dart';
 import '../Profile/profile_screen.dart';
@@ -9,10 +10,43 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFF0D9488);
-    const accentColor = Color(0xFFEA580C);
+    const accentColor = Color(0xFFF1BE26);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Health Tracker'),
+        backgroundColor: primaryColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text('Are you sure you want to log out?'),
+                  actions: [
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    TextButton(
+                      child: const Text('Logout'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        appLogout(context);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       backgroundColor: Colors.white,
+
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {
       //     // Handle Add button tap (e.g., open metrics input)

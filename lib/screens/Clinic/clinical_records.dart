@@ -117,11 +117,12 @@ class _ClinicalCalendarScreenState extends State<ClinicalCalendarScreen> {
                 shape: BoxShape.circle,
               ),
               todayDecoration: BoxDecoration(
-                color: Colors.orange,
-                border: Border.all(color: Colors.orange, width: 2),
+                color: Color(0xFFF1BE26),
+                border: Border.all(color: Color(0xFFF1BE26), width: 2),
                 shape: BoxShape.circle,
               ),
               selectedDecoration: BoxDecoration(
+                color: Colors.transparent,
                 border: Border.all(color: const Color(0xFF0D9488), width: 2),
                 shape: BoxShape.circle,
               ),

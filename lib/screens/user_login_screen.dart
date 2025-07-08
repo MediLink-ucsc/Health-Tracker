@@ -91,7 +91,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFF0D9488);
-    const accentColor = Color(0xFFEA580C);
+    const accentColor = Color(0xFFF1BE26);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7FAF9), // Light background
