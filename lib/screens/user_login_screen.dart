@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/screens/Home/home_screen.dart';
 import 'package:health_tracker/screens/user_signing_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-// Simulated database of registered users
-final Map<String, String> registeredUsers = {
-  "0712345678": "password123",
-  "0787654321": "mypassword",
-};
+import 'package:health_tracker/services/api_service.dart';
+import 'package:health_tracker/services/auth_service.dart';
 
 class UserLoginScreen extends StatefulWidget {
   const UserLoginScreen({super.key});
@@ -21,6 +16,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -29,42 +25,63 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
   }
 
   Future<void> _loadSavedLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    final rememberMe = prefs.getBool('remember_me') ?? false;
-    if (rememberMe) {
-      final savedPhone = prefs.getString('saved_phone') ?? '';
-      final savedPassword = prefs.getString('saved_password') ?? '';
+    final savedCredentials = await AuthService.getSavedCredentials();
+    if (savedCredentials != null) {
       setState(() {
         _rememberMe = true;
-        _phoneController.text = savedPhone;
-        _passwordController.text = savedPassword;
+        _phoneController.text = savedCredentials.username;
+        _passwordController.text = savedCredentials.password;
       });
     }
   }
 
-  void _login() {
+  void _login() async {
     if (_formKey.currentState!.validate()) {
-      final phone = _phoneController.text.trim();
+      setState(() {
+        _isLoading = true;
+      });
+
+      final username = _phoneController.text.trim();
       final password = _passwordController.text;
 
-      if (!registeredUsers.containsKey(phone)) {
-        _showMessage("No account found for this phone number.");
-        return;
-      }
+      try {
+        final loginResponse = await ApiService.login(username, password);
 
-      if (registeredUsers[phone] != password) {
-        _showMessage("Incorrect password.");
-        return;
-      }
+        if (loginResponse.success && loginResponse.token != null) {
+          // Save token
+          await AuthService.saveToken(loginResponse.token!);
 
-      if (_rememberMe) {
-        _saveLogin(phone, password);
-      }
+          // Save credentials if remember me is checked
+          if (_rememberMe) {
+            await AuthService.saveLoginCredentials(username, password);
+          } else {
+            await AuthService.clearSavedCredentials();
+          }
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+          // Navigate to home screen
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          }
+        } else {
+          // Show error message
+          if (mounted) {
+            _showMessage(loginResponse.message ?? "Login failed");
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          _showMessage("An unexpected error occurred. Please try again.");
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -79,13 +96,6 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
     _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  Future<void> _saveLogin(String phone, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('remember_me', true);
-    await prefs.setString('saved_phone', phone);
-    await prefs.setString('saved_password', password);
   }
 
   @override
@@ -201,15 +211,24 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                         const Text('Remember Me'),
                       ],
                     ),
-                    const SizedBox(height: 24),
-
-                    // Sign In button
+                    const SizedBox(height: 24), // Sign In button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: _login,
-                        icon: const Icon(Icons.login),
-                        label: const Text('Sign In'),
+                        onPressed: _isLoading ? null : _login,
+                        icon: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Icon(Icons.login),
+                        label: Text(_isLoading ? 'Signing In...' : 'Sign In'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,

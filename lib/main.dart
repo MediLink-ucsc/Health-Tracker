@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:health_tracker/screens/get_started_page.dart';
 import 'package:health_tracker/screens/splash_screen.dart';
 
@@ -12,6 +13,7 @@ void main() {
     ),
   );
   WidgetsFlutterBinding.ensureInitialized();
+  dotenv.load(fileName: ".env"); // Load environment variables
   runApp(const MyApp());
 }
 
