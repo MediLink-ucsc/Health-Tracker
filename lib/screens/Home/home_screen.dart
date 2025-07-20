@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/Components/logout.dart';
 
 import '../../Components/custom_bottom_nav.dart';
+import '../Clinic/clinical_records.dart';
+import '../Metrics/input_metrics_screen.dart';
+import '../Metrics/metrices_summary_section.dart';
+import '../Metrics/record_metrices_section.dart';
 import '../Profile/profile_screen.dart';
+import '../Reports/lab_reports_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -165,29 +170,76 @@ class HomeScreen extends StatelessWidget {
                   _QuickAccessItem(
                     label: 'Lab Reports',
                     iconAsset: 'assets/icon/lab_report_2.png',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LabReportsScreen(),
+                        ),
+                      );
+                    },
                   ),
                   _QuickAccessItem(
                     label: 'Clinics',
                     iconAsset: 'assets/icon/clinic_2.png',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ClinicalCalendarScreen(),
+                        ),
+                      );
+                    },
                   ),
                   _QuickAccessItem(
                     label: 'My Profile',
                     iconAsset: 'assets/icon/profile_2.png',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfileScreen(),
+                        ),
+                      );
+                    },
                   ),
                   _QuickAccessItem(
                     label: 'Stats View',
                     iconAsset: 'assets/icon/stats_2.png',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MetricsSummaryScreen(),
+                        ),
+                      );
+                    },
                   ),
                   _QuickAccessItem(
                     label: 'Input Metrics',
                     iconAsset: 'assets/icon/input_2.png',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InputMetricScreen(),
+                        ),
+                      );
+                    },
                   ),
-                  _QuickAccessItem(
-                    label: 'Family Data',
-                    iconAsset: 'assets/icon/family_2.png',
-                  ),
+                  // _QuickAccessItem(
+                  //   label: 'Input Data',
+                  //   iconAsset: 'assets/icon/family_2.png',
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(builder: (context) => RecordMetricsScreen()),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
+
               const SizedBox(height: 28),
 
               // Spotlight Section
@@ -248,8 +300,13 @@ class HomeScreen extends StatelessWidget {
 class _QuickAccessItem extends StatelessWidget {
   final String label;
   final String iconAsset;
+  final VoidCallback onTap;
 
-  const _QuickAccessItem({required this.label, required this.iconAsset});
+  const _QuickAccessItem({
+    required this.label,
+    required this.iconAsset,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +315,7 @@ class _QuickAccessItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () {},
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
