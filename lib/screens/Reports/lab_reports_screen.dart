@@ -4,6 +4,7 @@ import 'package:health_tracker/screens/Reports/view_report_screen.dart';
 import '../../Components/custom_bottom_nav.dart';
 import '../../Components/logout.dart';
 import '../../models/lab_report.dart';
+import '../../services/api_service.dart';
 
 // class LabReport {
 //   final DateTime date;
@@ -17,61 +18,77 @@ import '../../models/lab_report.dart';
 //   });
 // }
 
-class LabReportsScreen extends StatelessWidget {
-  LabReportsScreen({super.key});
+class LabReportsScreen extends StatefulWidget {
+  const LabReportsScreen({super.key});
 
-  // Sample data
-  final List<LabReport> _reports = [
-    LabReport(
-      date: DateTime(2025, 7, 6),
-      fileName: 'BloodTest_Report.pdf',
-      extractedDetails: {
-        'Hemoglobin': '13.5 g/dL',
-        'WBC': '7000 /mm3',
-        'Platelets': '250000 /mm3',
-      },
-    ),
-    LabReport(
-      date: DateTime(2025, 7, 3),
-      fileName: 'XRay_Chest.jpg',
-      extractedDetails: {
-        'Observation': 'Mild inflammation in upper lobe',
-        'Recommendation': 'Follow-up after 2 weeks',
-      },
-    ),
-    LabReport(
-      date: DateTime(2025, 7, 3),
-      fileName: 'XRay_Chest.jpg',
-      extractedDetails: {
-        'Observation': 'Mild inflammation in upper lobe',
-        'Recommendation': 'Follow-up after 2 weeks',
-      },
-    ),
-    LabReport(
-      date: DateTime(2025, 7, 3),
-      fileName: 'XRay_Chest.jpg',
-      extractedDetails: {
-        'Observation': 'Mild inflammation in upper lobe',
-        'Recommendation': 'Follow-up after 2 weeks',
-      },
-    ),
-    LabReport(
-      date: DateTime(2025, 7, 3),
-      fileName: 'XRay_Chest.jpg',
-      extractedDetails: {
-        'Observation': 'Mild inflammation in upper lobe',
-        'Recommendation': 'Follow-up after 2 weeks',
-      },
-    ),
-    LabReport(
-      date: DateTime(2025, 7, 3),
-      fileName: 'XRay_Chest.jpg',
-      extractedDetails: {
-        'Observation': 'Mild inflammation in upper lobe',
-        'Recommendation': 'Follow-up after 2 weeks',
-      },
-    ),
-  ];
+  @override
+  State<LabReportsScreen> createState() => _LabReportsScreenState();
+}
+
+class _LabReportsScreenState extends State<LabReportsScreen> {
+  List<LabReport> _reports = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  // For now, using a hardcoded patient ID
+  // TODO: Replace with actual patient ID from authentication/user session
+  final String _patientId = 'PAT001';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLabReports();
+  }
+
+  Future<void> _fetchLabReports() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final response = await ApiService.getLabReports(_patientId);
+
+      if (response.success && response.data != null) {
+        final List<LabReport> labReports = [];
+
+        // Add completed results (processed lab reports)
+        for (final result in response.data!.results) {
+          labReports.add(LabReport.fromApiResponse(result));
+        }
+
+        // Add samples that don't have results yet (pending, in-progress, etc.)
+        for (final sample in response.data!.samples) {
+          final sampleMap = sample as Map<String, dynamic>;
+          final labResults = sampleMap['labResults'] as List<dynamic>;
+
+          // Only add sample if it doesn't have any results yet
+          if (labResults.isEmpty) {
+            labReports.add(LabReport.fromSample(sampleMap));
+          }
+        }
+
+        setState(() {
+          _reports = labReports;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = response.message ?? 'Failed to load lab reports';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'An error occurred while loading lab reports';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _refreshReports() async {
+    await _fetchLabReports();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +99,11 @@ class LabReportsScreen extends StatelessWidget {
         title: const Text('Lab Reports'),
         backgroundColor: primaryColor,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: _refreshReports,
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Logout',
@@ -110,8 +132,57 @@ class LabReportsScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(currentIndex: 1),
-      body: ListView.builder(
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 1),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, color: Colors.red, size: 64),
+            const SizedBox(height: 16),
+            Text(
+              _errorMessage!,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _refreshReports,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_reports.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.description_outlined, color: Colors.grey, size: 64),
+            SizedBox(height: 16),
+            Text(
+              'No lab reports found',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refreshReports,
+      child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _reports.length,
         itemBuilder: (context, index) {
@@ -123,25 +194,74 @@ class LabReportsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    report.fileName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          report.fileName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      if (report.status != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(report.status!),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            report.status!.toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Date: ${report.date.year}-${report.date.month.toString().padLeft(2, '0')}-${report.date.day.toString().padLeft(2, '0')}',
                     style: const TextStyle(color: Colors.grey),
                   ),
+                  if (report.testType != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Test Type: ${report.testType}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                  if (report.sampleType != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Sample Type: ${report.sampleType}',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ],
                   const SizedBox(height: 8),
-                  ...report.extractedDetails.entries.map((entry) {
+                  // Show a few key extracted details
+                  ...report.extractedDetails.entries.take(3).map((entry) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Text('${entry.key}: ${entry.value}'),
                     );
                   }),
+                  if (report.extractedDetails.length > 3) ...[
+                    Text(
+                      '... and ${report.extractedDetails.length - 3} more details',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.centerRight,
@@ -165,5 +285,21 @@ class LabReportsScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+      case 'processed':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'failed':
+        return Colors.red;
+      case 'in-progress':
+        return Colors.blue;
+      default:
+        return Colors.grey;
+    }
   }
 }

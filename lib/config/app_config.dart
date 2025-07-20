@@ -9,6 +9,7 @@ class AppConfig {
 
   // API endpoints
   static const String loginEndpoint = '/v1/auth/patient/login';
+  static const String labReportEndpoint = '/v1/labReport/workflow/patients';
 
   // Timeout settings
   static Duration get apiTimeout => Duration(
