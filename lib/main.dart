@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:health_tracker/screens/get_started_page.dart';
 import 'package:health_tracker/screens/splash_screen.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.white,
@@ -13,7 +13,14 @@ void main() {
     ),
   );
   WidgetsFlutterBinding.ensureInitialized();
-  dotenv.load(fileName: ".env"); // Load environment variables
+
+  try {
+    await dotenv.load(fileName: ".env"); // Load environment variables
+  } catch (e) {
+    print('Warning: Could not load .env file: $e');
+    // App will continue with default values
+  }
+
   runApp(const MyApp());
 }
 
