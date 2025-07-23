@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/screens/Reports/view_report_screen.dart';
+import 'dart:developer' as developer;
 
 import '../../Components/custom_bottom_nav.dart';
 import '../../Components/logout.dart';
 import '../../models/lab_report.dart';
 import '../../services/api_service.dart';
+import '../../services/auth_service.dart';
 
 // class LabReport {
 //   final DateTime date;
@@ -37,7 +39,53 @@ class _LabReportsScreenState extends State<LabReportsScreen> {
   @override
   void initState() {
     super.initState();
+    _decodeAndLogToken();
     _fetchLabReports();
+  }
+
+  Future<void> _decodeAndLogToken() async {
+    try {
+      // Get and decode the stored JWT token
+      final userData = await AuthService.getCurrentUserData();
+      
+      if (userData != null) {
+        developer.log('=== JWT Token Decoded Successfully ===', name: 'LabReports');
+        developer.log('Full decoded data: $userData', name: 'LabReports');
+        
+        // Log specific fields with better formatting
+        userData.forEach((key, value) {
+          if (key == 'exp') {
+            // Convert expiration timestamp to readable date
+            try {
+              final expDate = DateTime.fromMillisecondsSinceEpoch(value * 1000);
+              developer.log('$key: $value (expires: $expDate)', name: 'LabReports');
+            } catch (e) {
+              developer.log('$key: $value', name: 'LabReports');
+            }
+          } else if (key == 'iat') {
+            // Convert issued at timestamp to readable date
+            try {
+              final iatDate = DateTime.fromMillisecondsSinceEpoch(value * 1000);
+              developer.log('$key: $value (issued: $iatDate)', name: 'LabReports');
+            } catch (e) {
+              developer.log('$key: $value', name: 'LabReports');
+            }
+          } else {
+            developer.log('$key: $value', name: 'LabReports');
+          }
+        });
+        
+        // Check if token is expired
+        final isExpired = await AuthService.isTokenExpired();
+        developer.log('Token expired: $isExpired', name: 'LabReports');
+        
+        developer.log('=== End JWT Token Data ===', name: 'LabReports');
+      } else {
+        developer.log('No token found or failed to decode', name: 'LabReports');
+      }
+    } catch (e) {
+      developer.log('Error decoding token: $e', name: 'LabReports');
+    }
   }
 
   Future<void> _fetchLabReports() async {
