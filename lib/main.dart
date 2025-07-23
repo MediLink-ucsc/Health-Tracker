@@ -16,6 +16,10 @@ void main() async {
 
   try {
     await dotenv.load(fileName: ".env"); // Load environment variables
+    print('=== ENVIRONMENT CONFIG DEBUG ===');
+    print('BASE_URL loaded: ${dotenv.env['BASE_URL']}');
+    print('ENABLE_API_LOGGING: ${dotenv.env['ENABLE_API_LOGGING']}');
+    print('============================');
   } catch (e) {
     print('Warning: Could not load .env file: $e');
     // App will continue with default values

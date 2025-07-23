@@ -4,9 +4,12 @@ class AppConfig {
   // Load configuration from .env file with fallbacks
   static String get baseUrl {
     try {
-      return dotenv.env['BASE_URL'] ?? 'http://localhost:3000/api';
+      final envUrl = dotenv.env['BASE_URL'];
+      print('ENV BASE_URL: $envUrl'); // Debug log
+      return envUrl ?? 'http://192.168.1.15:3000/api';
     } catch (e) {
-      return 'http://localhost:3000/api';
+      print('Error loading BASE_URL from env: $e'); // Debug log
+      return 'http://192.168.1.15:3000/api';
     }
   }
 

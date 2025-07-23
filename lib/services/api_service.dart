@@ -26,6 +26,14 @@ class ApiService {
     try {
       final url = '${AppConfig.baseUrl}${AppConfig.loginEndpoint}';
 
+      // Enhanced debugging
+      print('=== API DEBUG INFO ===');
+      print('Attempting to connect to: $url');
+      print('Base URL from config: ${AppConfig.baseUrl}');
+      print('Login endpoint: ${AppConfig.loginEndpoint}');
+      print('Headers: $_headers');
+      print('=====================');
+
       if (AppConfig.enableApiLogging) {
         print('API Request: POST $url');
         print('Request Body: {"username": "$username", "password": "***"}');
@@ -70,31 +78,46 @@ class ApiService {
         );
       }
     } on http.ClientException catch (e) {
+      print('=== NETWORK ERROR DEBUG ===');
+      print('ClientException: $e');
+      print('Error type: ${e.runtimeType}');
+      print('========================');
+
       if (AppConfig.enableApiLogging) {
         print('Network Error: $e');
       }
       return LoginResponse(
         success: false,
         token: null,
-        message: 'Network error: Please check your internet connection',
+        message: 'Network error: $e',
       );
     } on FormatException catch (e) {
+      print('=== FORMAT ERROR DEBUG ===');
+      print('FormatException: $e');
+      print('Error type: ${e.runtimeType}');
+      print('=======================');
+
       if (AppConfig.enableApiLogging) {
         print('Format Error: $e');
       }
       return LoginResponse(
         success: false,
         token: null,
-        message: 'Invalid server response format',
+        message: 'Invalid server response format: $e',
       );
     } catch (e) {
+      print('=== GENERAL ERROR DEBUG ===');
+      print('Exception: $e');
+      print('Error type: ${e.runtimeType}');
+      print('========================');
+
       if (AppConfig.enableApiLogging) {
         print('API Error: $e');
       }
       return LoginResponse(
         success: false,
         token: null,
-        message: 'An unexpected error occurred. Please try again.',
+        message: 'Unexpected error: $e',
       );
     }
   }
