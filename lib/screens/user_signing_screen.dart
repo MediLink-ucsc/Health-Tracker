@@ -248,59 +248,97 @@ class _UserSigningScreenState extends State<UserSigningScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const primaryColor = Color(0xFF0D9488);
+    const accentColor = Color(0xFFF1BE26);
+
+    // Set dynamic content and button text based on step
     Widget content;
+    String buttonText;
+
     if (_step == 2) {
       content = _buildPhoneStep();
-    } else if (_step == 3) {
-      content = _buildOtpStep();
-    } else {
-      content = _buildDetailsStep();
-    }
-
-    // Set dynamic button text
-    String buttonText;
-    if (_step == 2) {
       buttonText = _otpSent ? 'Next' : 'Send OTP';
     } else if (_step == 3) {
+      content = _buildOtpStep();
       buttonText = 'Verify OTP';
     } else {
+      content = _buildDetailsStep();
       buttonText = 'Submit';
     }
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF7FAF9),
       appBar: AppBar(
-        title: const Text('User Registration'),
-        backgroundColor: Colors.teal.shade700,
+        title: const Text("User Registration"),
+        backgroundColor: primaryColor,
         foregroundColor: Colors.white,
+        centerTitle: true,
       ),
-      body: Container(
-        color: const Color(0xFFF5F7F9),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+      body: SafeArea(
+        child: Center(
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [content],
-            ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        child: SizedBox(
-          width: double.infinity,
-          height: 55,
-          child: ElevatedButton(
-            onPressed: _nextStep,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal.shade700,
-              foregroundColor: Colors.white,
-              textStyle: const TextStyle(fontSize: 18),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+            padding: const EdgeInsets.all(24),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Icon header
+                  Center(
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundColor: primaryColor.withOpacity(0.1),
+                      child: Icon(
+                        Icons.person_add_alt,
+                        size: 40,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  content,
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _nextStep,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: const TextStyle(fontSize: 18),
+                      ),
+                      child: Text(buttonText),
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Text(buttonText),
           ),
         ),
       ),
