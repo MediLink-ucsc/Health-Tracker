@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+
+import '../../models/metric.dart';
+import '../../services/auth_service.dart';
 
 class RecordMetricsScreen extends StatefulWidget {
   const RecordMetricsScreen({super.key});
@@ -50,6 +56,55 @@ class _RecordMetricsScreenState extends State<RecordMetricsScreen> {
       setState(() {
         _selectedFileNames.add(result.files.first.name);
       });
+    }
+  }
+
+  Future<void> saveMetrics() async {
+    final token = await AuthService.getToken();
+    final response = await http.post(
+      Uri.parse('http://192.168.87.162:3003/api/v1/metrics'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        "date": _dateController.text,
+        "weight": double.parse(_weightController.text),
+        "sugarLevel": double.tryParse(_sugarController.text),
+        "waterIntake": double.tryParse(_waterController.text),
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      print("Metrics saved successfully");
+    } else {
+      print("Error saving metrics: ${response.statusCode} - ${response.body}");
+      print(response);
+    }
+  }
+
+  Future<List<Metric>> fetchMetrics() async {
+    final response = await http.get(
+      Uri.parse('http://192.168.87.162:3003/patient-records/metrics'),
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Metric.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load metrics');
+    }
+  }
+
+  Future<void> uploadReport(String filePath) async {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('http://192.168.87.162:3003/patient-records/reports'),
+    );
+    request.files.add(await http.MultipartFile.fromPath('file', filePath));
+    var res = await request.send();
+    if (res.statusCode == 201) {
+      print("Report uploaded");
     }
   }
 
@@ -133,15 +188,28 @@ class _RecordMetricsScreenState extends State<RecordMetricsScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_metricsFormKey.currentState!.validate()) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Metrics saved successfully!'),
-                                ),
-                              );
+                              try {
+                                await saveMetrics();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Metrics saved successfully!',
+                                    ),
+                                  ),
+                                );
+                              } catch (e) {
+                                print('Error saving metrics: $e');
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error saving metrics: $e'),
+                                  ),
+                                );
+                              }
                             }
                           },
+
                           icon: const Icon(Icons.save),
                           label: const Text('Save Metrics'),
                           style: ElevatedButton.styleFrom(
