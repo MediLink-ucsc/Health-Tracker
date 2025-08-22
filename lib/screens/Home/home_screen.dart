@@ -182,10 +182,10 @@ class HomeScreen extends StatelessWidget {
                     label: 'Input Metrics',
                     iconAsset: 'assets/icon/input_2.png',
                   ),
-                  _QuickAccessItem(
-                    label: 'Family Data',
-                    iconAsset: 'assets/icon/family_2.png',
-                  ),
+                  // _QuickAccessItem(
+                  //   label: 'Family Data',
+                  //   iconAsset: 'assets/icon/family_2.png',
+                  // ),
                 ],
               ),
               const SizedBox(height: 28),

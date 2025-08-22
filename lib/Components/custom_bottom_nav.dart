@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/screens/Clinic/clinical_records.dart';
+import 'package:health_tracker/screens/Clinic/newsfeed_screen.dart';
 import 'package:health_tracker/screens/Metrics/input_metrics_screen.dart';
 import 'package:health_tracker/screens/Metrics/metrices_summary_section.dart';
 import 'package:health_tracker/screens/Reports/lab_reports_screen.dart';
@@ -62,9 +62,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   if (currentIndex != 2) {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const ClinicalCalendarScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => NewsFeedScreen()),
                     );
                   }
                   // Add your navigation

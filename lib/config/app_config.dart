@@ -6,10 +6,10 @@ class AppConfig {
     try {
       final envUrl = dotenv.env['BASE_URL'];
       print('ENV BASE_URL: $envUrl'); // Debug log
-      return envUrl ?? 'http://10.21.130.26:3000/api';
+      return envUrl ?? 'http://172.22.198.162:3000/api';
     } catch (e) {
       print('Error loading BASE_URL from env: $e'); // Debug log
-      return 'http://10.21.130.26:3000/api';
+      return 'http://172.22.198.162:3000/api';
     }
   }
 
