@@ -15,7 +15,7 @@ class AppConfig {
   // static const String baseUrl = 'https://staging-api.yourdomain.com';
 
   // TODO: Replace with your actual API base URL
-  static const String baseUrl = 'http://192.168.87.162:3000/api';
+  static const String baseUrl = 'http://10.21.130.26:3000/api';
 
   // API endpoints
   static const String loginEndpoint = '/v1/auth/patient/login';
