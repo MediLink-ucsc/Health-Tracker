@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/Components/logout.dart';
-
 import '../../Components/custom_bottom_nav.dart';
-import '../Profile/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -46,18 +44,7 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       backgroundColor: Colors.white,
-
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     // Handle Add button tap (e.g., open metrics input)
-      //   },
-      //   backgroundColor: primaryColor,
-      //   elevation: 4,
-      //   child: const Icon(Icons.add, size: 32),
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: CustomBottomNavBar(currentIndex: 0),
-
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -69,8 +56,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-
-                    backgroundColor: Color(0xFF0D9488),
+                    backgroundColor: primaryColor,
                     backgroundImage: AssetImage('assets/icon/user_2.png'),
                   ),
                   const SizedBox(width: 16),
@@ -101,7 +87,11 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Family Member Card
+              // Spotlight Section
+              const SpotlightSection(),
+              const SizedBox(height: 24),
+
+              // Last Recorded Activity
               Card(
                 color: const Color(0xFFE0F2F1),
                 elevation: 2,
@@ -182,59 +172,7 @@ class HomeScreen extends StatelessWidget {
                     label: 'Input Metrics',
                     iconAsset: 'assets/icon/input_2.png',
                   ),
-                  // _QuickAccessItem(
-                  //   label: 'Family Data',
-                  //   iconAsset: 'assets/icon/family_2.png',
-                  // ),
                 ],
-              ),
-              const SizedBox(height: 28),
-
-              // Spotlight Section
-              const Text(
-                'Spotlight',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '#Reminder',
-                            style: TextStyle(color: Color(0xFFEA580C)),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Upcoming Clinic Visit\nat MediCare Hospital',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'View Appointment Details',
-                            style: TextStyle(
-                              color: primaryColor,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Icon(Icons.calendar_month, size: 48, color: primaryColor),
-                  ],
-                ),
               ),
             ],
           ),
@@ -275,6 +213,102 @@ class _QuickAccessItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+// Spotlight Section Widget
+class SpotlightSection extends StatefulWidget {
+  const SpotlightSection({super.key});
+
+  @override
+  State<SpotlightSection> createState() => _SpotlightSectionState();
+}
+
+class _SpotlightSectionState extends State<SpotlightSection> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  final List<String> _images = [
+    'assets/notice1.jpg',
+    'assets/ad1.jpeg',
+    'assets/drink.jpg',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    const primaryColor = Color(0xFF0D9488);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Spotlight',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 250,
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _pageController,
+                itemCount: _images.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      image: DecorationImage(
+                        image: AssetImage(_images[index]),
+                        fit: BoxFit.cover,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          blurRadius: 10,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              // Dots Indicator
+              Positioned(
+                bottom: 8,
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    _images.length,
+                    (index) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _currentPage == index
+                            ? primaryColor
+                            : Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
