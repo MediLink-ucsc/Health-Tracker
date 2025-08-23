@@ -3,7 +3,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../services/auth_service.dart';
 import '/models/metric.dart';
+import 'package:intl/intl.dart';
+
+// ...
 
 class MetricsSummaryScreen extends StatefulWidget {
   const MetricsSummaryScreen({super.key});
@@ -28,15 +32,6 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
   Future<void> _loadMetrics() async {
     try {
       final metrics = await fetchMetrics();
-
-      // Debug print to check fetched data
-      print('Fetched ${metrics.length} metrics');
-      for (var m in metrics) {
-        print(
-          'Metric: date=${m.date}, weight=${m.weight}, sugarLevel=${m.sugarLevel}, waterIntake=${m.waterIntake}',
-        );
-      }
-
       setState(() {
         allMetrics = metrics;
         isLoading = false;
@@ -50,8 +45,14 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
   }
 
   Future<List<Metric>> fetchMetrics() async {
+    final token = await AuthService.getToken();
+
     final response = await http.get(
-      Uri.parse('http://192.168.1.100:3000/api/v1/metrics'),
+      Uri.parse('http://172.22.198.162:3003/api/v1/metrics'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -64,28 +65,12 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
 
   List<double> _getFilteredData(List<double> data) {
     if (data.isEmpty) return [];
-
     if (selectedRange == 'Week') {
-      final takeCount = data.length >= 7 ? 7 : data.length;
-      return data.take(takeCount).toList().reversed.toList();
+      return data.take(7).toList().reversed.toList();
     } else if (selectedRange == 'Month') {
-      final takeCount = data.length >= 30 ? 30 : data.length;
-      return data.take(takeCount).toList().reversed.toList();
+      return data.take(30).toList().reversed.toList();
     } else {
-      final monthCount = 12;
-      final daysPerMonth = 30;
-      List<double> result = [];
-      for (int m = 0; m < monthCount; m++) {
-        final start = m * daysPerMonth;
-        if (start >= data.length) break;
-        final end = ((start + daysPerMonth).clamp(0, data.length)).toInt();
-        final slice = data.sublist(start, end);
-        if (slice.isNotEmpty) {
-          final avg = slice.reduce((a, b) => a + b) / slice.length;
-          result.add(avg);
-        }
-      }
-      return result.reversed.toList();
+      return data; // For Year, just return all
     }
   }
 
@@ -127,13 +112,12 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
   Widget _buildChart(
     String title,
     List<double> data,
+    List<String> dates, // pass corresponding dates
     double minY,
     double maxY,
     Color color, {
     List<HorizontalRangeAnnotation>? ranges,
   }) {
-    final filtered = data;
-
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),
@@ -166,8 +150,8 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
                 lineBarsData: [
                   LineChartBarData(
                     spots: List.generate(
-                      filtered.length,
-                      (i) => FlSpot(i + 1, filtered[i].toDouble()),
+                      data.length,
+                      (i) => FlSpot(i.toDouble(), data[i]),
                     ),
                     isCurved: true,
                     color: color,
@@ -191,10 +175,17 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 24,
-                      getTitlesWidget: (value, _) => Text(
-                        'Pt ${value.toInt()}',
-                        style: const TextStyle(fontSize: 10),
-                      ),
+                      interval: 1,
+                      getTitlesWidget: (value, _) {
+                        int index = value.toInt();
+                        if (index >= 0 && index < dates.length) {
+                          return Text(
+                            dates[index],
+                            style: const TextStyle(fontSize: 10),
+                          );
+                        }
+                        return const Text('');
+                      },
                     ),
                   ),
                   topTitles: AxisTitles(
@@ -244,15 +235,16 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
       return const Center(child: Text('No metrics available'));
     }
 
+    final dateLabels = allMetrics
+        .map((m) => DateFormat('MM-dd').format(m.date))
+        .toList();
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(8),
-            ),
+          SizedBox(
+            width: double.infinity,
             child: ToggleButtons(
               borderRadius: BorderRadius.circular(8),
               borderColor: Colors.transparent,
@@ -275,33 +267,36 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          Expanded(
-            child: ListView(
-              children: [
-                _buildChart(
-                  'Weight Trend',
-                  _getFilteredWeights(),
-                  40,
-                  100,
-                  Colors.teal,
-                  ranges: _getBmiRanges(),
-                ),
-                _buildChart(
-                  'Sugar Level',
-                  _getFilteredSugarLevels(),
-                  80,
-                  110,
-                  Colors.orange,
-                ),
-                _buildChart(
-                  'Water Intake',
-                  _getFilteredWaterIntakes(),
-                  1.5,
-                  2.5,
-                  Colors.blue,
-                ),
-              ],
-            ),
+          ListView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              _buildChart(
+                'Weight Trend',
+                _getFilteredWeights(),
+                dateLabels,
+                40,
+                100,
+                Colors.teal,
+                ranges: _getBmiRanges(),
+              ),
+              _buildChart(
+                'Sugar Level',
+                _getFilteredSugarLevels(),
+                dateLabels,
+                80,
+                110,
+                Colors.orange,
+              ),
+              _buildChart(
+                'Water Intake',
+                _getFilteredWaterIntakes(),
+                dateLabels,
+                1.5,
+                2.5,
+                Colors.blue,
+              ),
+            ],
           ),
         ],
       ),
