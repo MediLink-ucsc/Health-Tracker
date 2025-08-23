@@ -109,10 +109,131 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
     ];
   }
 
+  // ------------------------- WEIGHT -------------------------
+  double getMinWeight(List<double> data, {double defaultMin = 40}) {
+    if (data.isEmpty) return defaultMin;
+    final actualMin = data.reduce((a, b) => a < b ? a : b);
+    return actualMin < defaultMin ? actualMin : defaultMin;
+  }
+
+  double getMaxWeight(List<double> data, {double defaultMax = 100}) {
+    if (data.isEmpty) return defaultMax;
+    final actualMax = data.reduce((a, b) => a > b ? a : b);
+    return actualMax > defaultMax ? actualMax : defaultMax;
+  }
+
+  List<HorizontalRangeAnnotation> getWeightRanges(
+    List<double> data,
+    double heightMeters,
+  ) {
+    final h2 = heightMeters * heightMeters;
+    final underweightMax = 18.5 * h2;
+    final normalMax = 24.9 * h2;
+    final overweightMax = 29.9 * h2;
+
+    final minWeight = getMinWeight(data, defaultMin: 40);
+    final maxWeight = getMaxWeight(data, defaultMax: 100);
+
+    return [
+      HorizontalRangeAnnotation(
+        y1: minWeight,
+        y2: underweightMax.clamp(minWeight, maxWeight),
+        color: Colors.blue.withOpacity(0.15),
+      ),
+      HorizontalRangeAnnotation(
+        y1: underweightMax.clamp(minWeight, maxWeight),
+        y2: normalMax.clamp(minWeight, maxWeight),
+        color: Colors.green.withOpacity(0.15),
+      ),
+      HorizontalRangeAnnotation(
+        y1: normalMax.clamp(minWeight, maxWeight),
+        y2: overweightMax.clamp(minWeight, maxWeight),
+        color: Colors.orange.withOpacity(0.15),
+      ),
+      HorizontalRangeAnnotation(
+        y1: overweightMax.clamp(minWeight, maxWeight),
+        y2: maxWeight,
+        color: Colors.red.withOpacity(0.15),
+      ),
+    ];
+  }
+
+  // ------------------------- SUGAR -------------------------
+  double getMinSugar(List<double> data, {double defaultMin = 50}) {
+    if (data.isEmpty) return defaultMin;
+    final actualMin = data.reduce((a, b) => a < b ? a : b);
+    return actualMin < defaultMin ? actualMin : defaultMin;
+  }
+
+  double getMaxSugar(List<double> data, {double defaultMax = 200}) {
+    if (data.isEmpty) return defaultMax;
+    final actualMax = data.reduce((a, b) => a > b ? a : b);
+    return actualMax > defaultMax ? actualMax : defaultMax;
+  }
+
+  List<HorizontalRangeAnnotation> getSugarRanges(List<double> data) {
+    final minSugar = getMinSugar(data);
+    final maxSugar = getMaxSugar(data);
+
+    return [
+      HorizontalRangeAnnotation(
+        y1: minSugar,
+        y2: 99.clamp(minSugar, maxSugar).toDouble(), // Normal fasting sugar
+        color: Colors.green.withOpacity(0.15),
+      ),
+      HorizontalRangeAnnotation(
+        y1: 100.clamp(minSugar, maxSugar).toDouble(),
+        y2: 125.clamp(minSugar, maxSugar).toDouble(), // Prediabetes
+        color: Colors.orange.withOpacity(0.15),
+      ),
+      HorizontalRangeAnnotation(
+        y1: 126.clamp(minSugar, maxSugar).toDouble(),
+        y2: maxSugar, // High sugar
+        color: Colors.red.withOpacity(0.15),
+      ),
+    ];
+  }
+
+  // ------------------------- WATER INTAKE -------------------------
+  double getMinWater(List<double> data, {double defaultMin = 0}) {
+    if (data.isEmpty) return defaultMin;
+    final actualMin = data.reduce((a, b) => a < b ? a : b);
+    return actualMin < defaultMin ? actualMin : defaultMin;
+  }
+
+  double getMaxWater(List<double> data, {double defaultMax = 3.0}) {
+    if (data.isEmpty) return defaultMax;
+    final actualMax = data.reduce((a, b) => a > b ? a : b);
+    return actualMax > defaultMax ? actualMax : defaultMax;
+  }
+
+  List<HorizontalRangeAnnotation> getWaterRanges(List<double> data) {
+    final minWater = getMinWater(data);
+    final maxWater = getMaxWater(data);
+
+    return [
+      HorizontalRangeAnnotation(
+        y1: minWater,
+        y2: 2.0.clamp(minWater, maxWater),
+        color: Colors.red.withOpacity(0.15), // Less than recommended
+      ),
+      HorizontalRangeAnnotation(
+        y1: 2.0.clamp(minWater, maxWater),
+        y2: 3.0.clamp(minWater, maxWater),
+        color: Colors.green.withOpacity(0.15), // Healthy intake
+      ),
+      HorizontalRangeAnnotation(
+        y1: 3.0.clamp(minWater, maxWater),
+        y2: maxWater,
+        color: Colors.orange.withOpacity(0.15), // Too much
+      ),
+    ];
+  }
+
   Widget _buildChart(
     String title,
     List<double> data,
-    List<String> dates, // pass corresponding dates
+    List<DateTime> dates,
     double minY,
     double maxY,
     Color color, {
@@ -178,16 +299,36 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
                       interval: 1,
                       getTitlesWidget: (value, _) {
                         int index = value.toInt();
-                        if (index >= 0 && index < dates.length) {
+                        if (index < 0 || index >= dates.length)
+                          return const Text('');
+
+                        if (selectedRange == 'Week') {
                           return Text(
-                            dates[index],
+                            DateFormat('dd/MM').format(dates[index]),
                             style: const TextStyle(fontSize: 10),
                           );
+                        } else if (selectedRange == 'Month') {
+                          if (index % 3 == 0) {
+                            return Text(
+                              DateFormat('dd/MM').format(dates[index]),
+                              style: const TextStyle(fontSize: 10),
+                            );
+                          }
+                          return const Text('');
+                        } else if (selectedRange == 'Year') {
+                          if (dates[index].day == 1) {
+                            return Text(
+                              DateFormat('MMM').format(dates[index]),
+                              style: const TextStyle(fontSize: 10),
+                            );
+                          }
+                          return const Text('');
                         }
                         return const Text('');
                       },
                     ),
                   ),
+
                   topTitles: AxisTitles(
                     sideTitles: SideTitles(showTitles: false),
                   ),
@@ -235,8 +376,9 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
       return const Center(child: Text('No metrics available'));
     }
 
-    final dateLabels = allMetrics
-        .map((m) => DateFormat('MM-dd').format(m.date))
+    final dateTimes = allMetrics.map((m) => m.date).toList();
+    final dateLabels = dateTimes
+        .map((dt) => DateFormat('MM-dd').format(dt))
         .toList();
 
     return Padding(
@@ -274,27 +416,31 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
               _buildChart(
                 'Weight Trend',
                 _getFilteredWeights(),
-                dateLabels,
-                40,
-                100,
+                dateTimes,
+                getMinWeight(_getFilteredWeights()),
+                getMaxWeight(_getFilteredWeights()),
                 Colors.teal,
-                ranges: _getBmiRanges(),
+                ranges: getWeightRanges(_getFilteredWeights(), heightMeters),
               ),
+
               _buildChart(
                 'Sugar Level',
                 _getFilteredSugarLevels(),
-                dateLabels,
-                80,
-                110,
+                dateTimes,
+                getMinSugar(_getFilteredSugarLevels()),
+                getMaxSugar(_getFilteredSugarLevels()),
                 Colors.orange,
+                ranges: getSugarRanges(_getFilteredSugarLevels()),
               ),
+
               _buildChart(
                 'Water Intake',
                 _getFilteredWaterIntakes(),
-                dateLabels,
-                1.5,
-                2.5,
+                dateTimes,
+                getMinWater(_getFilteredWaterIntakes()),
+                getMaxWater(_getFilteredWaterIntakes()),
                 Colors.blue,
+                ranges: getWaterRanges(_getFilteredWaterIntakes()),
               ),
             ],
           ),
