@@ -51,7 +51,7 @@ class _RecordMetricsScreenState extends State<RecordMetricsScreen> {
   Future<void> saveMetrics() async {
     final token = await AuthService.getToken();
     final response = await http.post(
-      Uri.parse('http://172.22.198.162:3003/api/v1/metrics'),
+      Uri.parse('http://10.219.39.162:3003/api/v1/metrics'),
       headers: {
         'Content-Type': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',

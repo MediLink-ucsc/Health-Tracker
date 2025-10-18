@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_tracker/screens/Clinic/newsfeed_screen.dart';
+import 'package:health_tracker/screens/Newsfeed/newsfeed_screen.dart';
 import 'package:health_tracker/screens/Metrics/input_metrics_screen.dart';
 import 'package:health_tracker/screens/Metrics/metrices_summary_section.dart';
 import 'package:health_tracker/screens/Reports/lab_reports_screen.dart';

@@ -48,7 +48,7 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
     final token = await AuthService.getToken();
 
     final response = await http.get(
-      Uri.parse('http://172.22.198.162:3003/api/v1/metrics'),
+      Uri.parse('http://10.219.39.162:3003/api/v1/metrics'),
       headers: {
         'Content-Type': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',

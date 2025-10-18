@@ -318,7 +318,12 @@
 import 'package:flutter/material.dart';
 import 'package:health_tracker/Components/logout.dart';
 import '../../Components/custom_bottom_nav.dart';
+import '../Clinic/clinic_screen.dart';
+import '../Newsfeed/newsfeed_screen.dart';
 import '../Metrics/metrices_summary_section.dart';
+import '../Metrics/record_metrices_section.dart';
+import '../Profile/profile_screen.dart';
+import '../Reports/lab_reports_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -429,29 +434,95 @@ class HomeScreen extends StatelessWidget {
                 childAspectRatio: 0.9,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                children: const [
-                  _QuickAccessItem(
-                    label: 'Lab Reports',
-                    iconAsset: 'assets/icon/lab_report_2.png',
+                children: [
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LabReportsScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'Lab Reports',
+                      iconAsset: 'assets/icon/lab_report_2.png',
+                    ),
                   ),
-                  _QuickAccessItem(
-                    label: 'Clinics',
-                    iconAsset: 'assets/icon/clinic_2.png',
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NewsFeedScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'Clinics',
+                      iconAsset: 'assets/icon/clinic_2.png',
+                    ),
                   ),
-                  _QuickAccessItem(
-                    label: 'My Profile',
-                    iconAsset: 'assets/icon/profile_2.png',
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'My Profile',
+                      iconAsset: 'assets/icon/profile_2.png',
+                    ),
                   ),
-                  _QuickAccessItem(
-                    label: 'Stats View',
-                    iconAsset: 'assets/icon/stats_2.png',
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MetricsSummaryScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'Stats View',
+                      iconAsset: 'assets/icon/stats_2.png',
+                    ),
                   ),
-                  _QuickAccessItem(
-                    label: 'Input Metrics',
-                    iconAsset: 'assets/icon/input_2.png',
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RecordMetricsScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'Input Metrics',
+                      iconAsset: 'assets/icon/input_2.png',
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const ClinicVisitDetailsScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'Clinics',
+                      iconAsset: 'assets/icon/clinic_2.png',
+                    ),
                   ),
                 ],
               ),
+
               const SizedBox(height: 24),
 
               // Last Recorded Activity
@@ -523,23 +594,19 @@ class _QuickAccessItem extends StatelessWidget {
     return Material(
       color: const Color(0xFFF9F9F9),
       borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {},
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(iconAsset, height: 50, width: 50),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13),
-              ),
-            ],
-          ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(iconAsset, height: 50, width: 50),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13),
+            ),
+          ],
         ),
       ),
     );
