@@ -317,6 +317,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:health_tracker/Components/logout.dart';
+import 'package:health_tracker/screens/Prescrption/prescription_view_screen.dart';
 import '../../Components/custom_bottom_nav.dart';
 import '../Clinic/clinic_screen.dart';
 import '../Newsfeed/newsfeed_screen.dart';
@@ -482,12 +483,12 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MetricsSummaryScreen(),
+                          builder: (context) => PrescriptionListScreen(),
                         ),
                       );
                     },
                     child: const _QuickAccessItem(
-                      label: 'Stats View',
+                      label: 'Prescriptions',
                       iconAsset: 'assets/icon/stats_2.png',
                     ),
                   ),
