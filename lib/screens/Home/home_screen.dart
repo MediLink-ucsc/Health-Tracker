@@ -319,6 +319,7 @@ import 'package:flutter/material.dart';
 import 'package:health_tracker/Components/logout.dart';
 import 'package:health_tracker/screens/Prescrption/prescription_view_screen.dart';
 import '../../Components/custom_bottom_nav.dart';
+import '../Care Plans/care_plans_screen.dart';
 import '../Clinic/clinic_screen.dart';
 import '../Newsfeed/newsfeed_screen.dart';
 import '../Metrics/metrices_summary_section.dart';
@@ -424,7 +425,7 @@ class HomeScreen extends StatelessWidget {
 
               // Quick Access Section
               const Text(
-                'Quick Access',
+                'Feature Tiles',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
@@ -436,48 +437,6 @@ class HomeScreen extends StatelessWidget {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LabReportsScreen(),
-                        ),
-                      );
-                    },
-                    child: const _QuickAccessItem(
-                      label: 'Lab Reports',
-                      iconAsset: 'assets/icon/lab_report_2.png',
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NewsFeedScreen(),
-                        ),
-                      );
-                    },
-                    child: const _QuickAccessItem(
-                      label: 'Clinics',
-                      iconAsset: 'assets/icon/clinic_2.png',
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProfileScreen(),
-                        ),
-                      );
-                    },
-                    child: const _QuickAccessItem(
-                      label: 'My Profile',
-                      iconAsset: 'assets/icon/profile_2.png',
-                    ),
-                  ),
                   InkWell(
                     onTap: () {
                       Navigator.push(
@@ -497,13 +456,13 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const RecordMetricsScreen(),
+                          builder: (context) => const LabReportsScreen(),
                         ),
                       );
                     },
                     child: const _QuickAccessItem(
-                      label: 'Input Metrics',
-                      iconAsset: 'assets/icon/input_2.png',
+                      label: 'Lab Reports',
+                      iconAsset: 'assets/icon/lab_report_2.png',
                     ),
                   ),
                   InkWell(
@@ -521,57 +480,104 @@ class HomeScreen extends StatelessWidget {
                       iconAsset: 'assets/icon/clinic_2.png',
                     ),
                   ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NewsFeedScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'Feed News',
+                      iconAsset: 'assets/icon/feed2.png',
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CarePlanListScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'Care Plans',
+                      iconAsset: 'assets/icon/input_2.png',
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ),
+                      );
+                    },
+                    child: const _QuickAccessItem(
+                      label: 'Visit Plans',
+                      iconAsset: 'assets/icon/profile_2.png',
+                    ),
+                  ),
                 ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 36),
 
               // Last Recorded Activity
-              Card(
-                color: const Color(0xFFE0F2F1),
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.analytics, color: accentColor),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'Last Recorded Activity',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Blood Sugar: 120 mg/dL',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              'Date: 2025-07-07',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              // Card(
+              //   color: const Color(0xFFE0F2F1),
+              //   elevation: 2,
+              //   shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(12),
+              //   ),
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(12),
+              //     child: Row(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Icon(Icons.analytics, color: accentColor),
+              //         const SizedBox(width: 12),
+              //         Expanded(
+              //           child: Column(
+              //             crossAxisAlignment: CrossAxisAlignment.start,
+              //             children: const [
+              //               Text(
+              //                 'Last Recorded Activity',
+              //                 style: TextStyle(
+              //                   fontWeight: FontWeight.w600,
+              //                   fontSize: 16,
+              //                 ),
+              //               ),
+              //               SizedBox(height: 4),
+              //               Text(
+              //                 'Blood Sugar: 120 mg/dL',
+              //                 style: TextStyle(fontSize: 14),
+              //               ),
+              //               SizedBox(height: 2),
+              //               Text(
+              //                 'Date: 2025-07-07',
+              //                 style: TextStyle(
+              //                   fontSize: 12,
+              //                   color: Colors.grey,
+              //                 ),
+              //               ),
+              //             ],
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 24),
+              const Text(
+                'Metrics Summary',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 24),
+              // const SizedBox(height: 24),
 
               // Metrics Summary
               const MetricsSummaryScreen(),

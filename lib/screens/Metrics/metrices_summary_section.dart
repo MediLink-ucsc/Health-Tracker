@@ -46,9 +46,17 @@ class _MetricsSummaryScreenState extends State<MetricsSummaryScreen> {
 
   Future<List<Metric>> fetchMetrics() async {
     final token = await AuthService.getToken();
+    final userId = await AuthService.getUserId();
+
+    if (userId == null) {
+      print('❌ No user ID found — user might not be logged in');
+      return [];
+    }
 
     final response = await http.get(
-      Uri.parse('http://10.219.39.162:3003/api/v1/metrics'),
+      Uri.parse(
+        'http://10.219.39.162:3000/api/v1/patientRecords/metricsRecords/users/$userId/metrics',
+      ),
       headers: {
         'Content-Type': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',

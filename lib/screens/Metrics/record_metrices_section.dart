@@ -50,8 +50,17 @@ class _RecordMetricsScreenState extends State<RecordMetricsScreen> {
 
   Future<void> saveMetrics() async {
     final token = await AuthService.getToken();
+    final userId = await AuthService.getUserId();
+
+    if (userId == null) {
+      print('❌ No user ID found — user might not be logged in');
+      return;
+    }
+
     final response = await http.post(
-      Uri.parse('http://10.219.39.162:3003/api/v1/metrics'),
+      Uri.parse(
+        'http://10.219.39.162:3000/api/v1/patientRecords/metricsRecords/users/$userId/metrics',
+      ),
       headers: {
         'Content-Type': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',
@@ -199,93 +208,6 @@ class _RecordMetricsScreenState extends State<RecordMetricsScreen> {
             ),
 
             const SizedBox(height: 16),
-
-            // Reports Card
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Patient Reports',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ...(_selectedFileNames.isEmpty
-                        ? [
-                            GestureDetector(
-                              onTap: _pickFile,
-                              child: Container(
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                ),
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.cloud_upload,
-                                    size: 40,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ]
-                        : [
-                            for (
-                              int i = 0;
-                              i < _selectedFileNames.length;
-                              i++
-                            ) ...[
-                              ListTile(
-                                leading: const Icon(
-                                  Icons.insert_drive_file,
-                                  color: Colors.teal,
-                                ),
-                                title: Text(_selectedFileNames[i]),
-                                trailing: IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    setState(
-                                      () => _selectedFileNames.removeAt(i),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          ]),
-                    const SizedBox(height: 12),
-                    ElevatedButton.icon(
-                      onPressed: _pickFile,
-                      icon: const Icon(Icons.add),
-                      label: const Text('Add Report'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade200,
-                        foregroundColor: Colors.black87,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),
