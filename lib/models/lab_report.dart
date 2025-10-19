@@ -21,29 +21,26 @@ class LabReport {
 
   // Factory constructor to create LabReport from API response
   factory LabReport.fromApiResponse(Map<String, dynamic> result) {
-    final labSample = result['labSample'] as Map<String, dynamic>;
-    final testType = labSample['testType'] as Map<String, dynamic>;
+    final labSample = result['labSample'] as Map<String, dynamic>? ?? {};
+    final testType = labSample['testType'] as Map<String, dynamic>? ?? {};
     final extractedData =
         result['extractedData'] as Map<String, dynamic>? ?? {};
 
-    // Convert extractedData to Map<String, String>
     final Map<String, String> extractedDetails = {};
     extractedData.forEach((key, value) {
-      extractedDetails[key] = value.toString();
+      if (value is Map<String, dynamic> && value.containsKey('value')) {
+        final val = value['value'] ?? '';
+        final unit = value['unit'] ?? '';
+        extractedDetails[key] = '$val ${unit.toString()}'.trim();
+      } else {
+        extractedDetails[key] = value.toString();
+      }
     });
 
-    // Parse date from createdAt
-    DateTime date = DateTime.now();
-    try {
-      date = DateTime.parse(result['createdAt'] as String);
-    } catch (e) {
-      // Use current date if parsing fails
-      date = DateTime.now();
-    }
-
-    // Generate file name from test type and date
+    DateTime date =
+        DateTime.tryParse(result['createdAt'] ?? '') ?? DateTime.now();
     final fileName =
-        '${testType['label']}_${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}.pdf';
+        '${testType['label'] ?? 'Unknown'}_${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}.pdf';
 
     return LabReport(
       id: result['id'] as int?,
@@ -57,38 +54,27 @@ class LabReport {
     );
   }
 
-  // Factory constructor to create LabReport from sample data (for pending/in-progress tests)
   factory LabReport.fromSample(Map<String, dynamic> sample) {
-    final testType = sample['testType'] as Map<String, dynamic>;
-
-    // For samples without results, create basic extracted details
+    final testType = sample['testType'] as Map<String, dynamic>? ?? {};
     final Map<String, String> extractedDetails = {
-      'Sample Type': sample['sampleType'] as String? ?? 'N/A',
-      'Volume': sample['volume'] as String? ?? 'N/A',
-      'Container': sample['container'] as String? ?? 'N/A',
-      'Priority': sample['priority'] as String? ?? 'N/A',
-      'Notes': sample['notes'] as String? ?? 'N/A',
+      'Sample Type': sample['sampleType'] ?? 'N/A',
+      'Volume': sample['volume'] ?? 'N/A',
+      'Container': sample['container'] ?? 'N/A',
+      'Priority': sample['priority'] ?? 'N/A',
+      'Notes': sample['notes'] ?? 'N/A',
     };
 
-    // Parse date from createdAt
-    DateTime date = DateTime.now();
-    try {
-      date = DateTime.parse(sample['createdAt'] as String);
-    } catch (e) {
-      // Use current date if parsing fails
-      date = DateTime.now();
-    }
-
-    // Generate file name from test type and date
+    DateTime date =
+        DateTime.tryParse(sample['createdAt'] ?? '') ?? DateTime.now();
     final fileName =
-        '${testType['label']}_${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}.pdf';
+        '${testType['label'] ?? 'Unknown'}_${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}.pdf';
 
     return LabReport(
       id: sample['id'] as int?,
       date: date,
       fileName: fileName,
       extractedDetails: extractedDetails,
-      reportUrl: null, // No report URL for pending samples
+      reportUrl: null,
       testType: testType['label'] as String?,
       sampleType: sample['sampleType'] as String?,
       status: sample['status'] as String?,
