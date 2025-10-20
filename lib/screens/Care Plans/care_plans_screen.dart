@@ -1,53 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:health_tracker/screens/Care%20Plans/view_care_plan_screen.dart';
 import '../../Components/custom_bottom_nav.dart';
 import '../../Components/logout.dart';
+import '../../models/care_plan.dart';
+import '../../services/care_plan_service.dart';
 import 'view_care_plan_screen.dart';
-import '/models/care_plan.dart';
 
 class CarePlanListScreen extends StatelessWidget {
-  CarePlanListScreen({super.key});
-
-  final List<CarePlan> _carePlans = [
-    CarePlan(
-      planType: 'Diabetes Management',
-      priority: 'High',
-      startDate: DateTime.now().subtract(const Duration(days: 10)),
-      endDate: DateTime.now().add(const Duration(days: 20)),
-      description: 'Monitor blood sugar and maintain healthy diet.',
-      goals: 'Keep blood sugar in range and avoid complications.',
-      tasks: [
-        CareTask(
-          description: 'Check blood sugar every morning',
-          dueDate: DateTime.now().add(const Duration(days: 1)),
-          priority: 'High',
-        ),
-        CareTask(
-          description: 'Take medication on time',
-          dueDate: DateTime.now().add(const Duration(days: 2)),
-          priority: 'Medium',
-        ),
-      ],
-    ),
-    CarePlan(
-      planType: 'Post Surgery Recovery',
-      priority: 'Medium',
-      startDate: DateTime.now().subtract(const Duration(days: 5)),
-      endDate: DateTime.now().add(const Duration(days: 25)),
-      description: 'Focus on wound healing and follow-up checkups.',
-      goals: 'Full recovery within expected time.',
-      tasks: [
-        CareTask(
-          description: 'Daily wound dressing',
-          dueDate: DateTime.now().add(const Duration(days: 1)),
-          priority: 'High',
-        ),
-      ],
-    ),
-  ];
+  const CarePlanListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFF0D9488);
+    const patientId = "12345"; // Replace dynamically
 
     return Scaffold(
       appBar: AppBar(
@@ -80,54 +45,68 @@ class CarePlanListScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: const CustomBottomNavBar(currentIndex: 3),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: _carePlans.length,
-        itemBuilder: (context, index) {
-          final plan = _carePlans[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(12),
-              title: Text(
-                plan.planType,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                '${plan.startDate.toLocal()}'.split(' ')[0] +
-                    ' - ' +
-                    '${plan.endDate.toLocal()}'.split(' ')[0],
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    plan.priority,
-                    style: TextStyle(
-                      color: plan.priority == 'High'
-                          ? Colors.red
-                          : (plan.priority == 'Medium'
-                                ? Colors.orange
-                                : Colors.green),
-                      fontWeight: FontWeight.bold,
-                    ),
+      body: FutureBuilder<List<CarePlan>>(
+        future: CarePlanService.getCarePlans(patientId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('❌ ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No care plans found.'));
+          }
+
+          final plans = snapshot.data!;
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: plans.length,
+            itemBuilder: (context, index) {
+              final plan = plans[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(12),
+                  title: Text(
+                    plan.planType,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward_ios, size: 16),
-                ],
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CarePlanDetailScreen(plan: plan),
+                  subtitle: Text(
+                    '${plan.startDate.toLocal()}'.split(' ')[0] +
+                        ' - ' +
+                        '${plan.endDate.toLocal()}'.split(' ')[0],
                   ),
-                );
-              },
-            ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        plan.priority,
+                        style: TextStyle(
+                          color: plan.priority == 'High'
+                              ? Colors.red
+                              : (plan.priority == 'Medium'
+                                    ? Colors.orange
+                                    : Colors.green),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_ios, size: 16),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CarePlanDetailScreen(plan: plan),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),

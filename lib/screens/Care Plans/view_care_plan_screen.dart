@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '/models/care_plan.dart';
+import '../../models/care_plan.dart';
 
 class CarePlanDetailScreen extends StatelessWidget {
   final CarePlan plan;
-
   const CarePlanDetailScreen({super.key, required this.plan});
 
   @override
@@ -110,7 +109,7 @@ class CarePlanDetailScreen extends StatelessWidget {
                   ),
                 ),
               );
-            }),
+            }).toList(),
           ],
         ),
       ),
