@@ -441,31 +441,6 @@ class HomeScreen extends StatelessWidget {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
-                  // InkWell(
-                  //   onTap: () async {
-                  //     final patientId = await AuthService.getUserId();
-                  //     if (patientId != null) {
-                  //       Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //           builder: (context) => PrescriptionListScreen(
-                  //             patientId: patientId ?? '',
-                  //           ),
-                  //         ),
-                  //       );
-                  //     } else {
-                  //       ScaffoldMessenger.of(context).showSnackBar(
-                  //         const SnackBar(
-                  //           content: Text('Failed to get patient ID'),
-                  //         ),
-                  //       );
-                  //     }
-                  //   },
-                  //   child: const _QuickAccessItem(
-                  //     label: 'Prescriptions',
-                  //     iconAsset: 'assets/icon/stats_2.png',
-                  //   ),
-                  // ),
                   InkWell(
                     onTap: () {
                       Navigator.push(
@@ -495,21 +470,21 @@ class HomeScreen extends StatelessWidget {
                       iconAsset: 'assets/icon/lab_report_2.png',
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const ClinicVisitDetailsScreen(),
-                        ),
-                      );
-                    },
-                    child: const _QuickAccessItem(
-                      label: 'Clinics',
-                      iconAsset: 'assets/icon/clinic_2.png',
-                    ),
-                  ),
+                  // InkWell(
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) =>
+                  //             const ClinicVisitDetailsScreen(),
+                  //       ),
+                  //     );
+                  //   },
+                  //   child: const _QuickAccessItem(
+                  //     label: 'Clinics',
+                  //     iconAsset: 'assets/icon/clinic_2.png',
+                  //   ),
+                  // ),
                   InkWell(
                     onTap: () {
                       Navigator.push(
