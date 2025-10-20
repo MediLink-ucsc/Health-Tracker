@@ -149,10 +149,9 @@ class AuthService {
   }
 
   static Future<String?> getUserId() async {
-    final data = await AuthService.getCurrentUserData();
-    print('🔸 Decoded user data: $data');
+    final decoded = await AuthService.getCurrentUserData();
+    // print('🔸 Decoded user data: $data');
 
-    final decoded = await getCurrentUserData();
     if (decoded != null && decoded.containsKey('id')) {
       final userId = decoded['id'];
       return userId.toString();

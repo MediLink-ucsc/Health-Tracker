@@ -317,15 +317,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:health_tracker/Components/logout.dart';
-import 'package:health_tracker/screens/Prescrption/prescription_view_screen.dart';
+import 'package:health_tracker/screens/Prescrption/view_prescription_screen.dart';
+import 'package:health_tracker/screens/Visit%20Plans/view_lab_test_screen.dart';
 import '../../Components/custom_bottom_nav.dart';
+import '../../services/auth_service.dart';
 import '../Care Plans/care_plans_screen.dart';
 import '../Clinic/clinic_screen.dart';
 import '../Newsfeed/newsfeed_screen.dart';
 import '../Metrics/metrices_summary_section.dart';
 import '../Metrics/record_metrices_section.dart';
+import '../Prescrption/prescriptions_screen.dart';
 import '../Profile/profile_screen.dart';
 import '../Reports/lab_reports_screen.dart';
+import '../Visit Plans/lab_tests_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -437,12 +441,37 @@ class HomeScreen extends StatelessWidget {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
+                  // InkWell(
+                  //   onTap: () async {
+                  //     final patientId = await AuthService.getUserId();
+                  //     if (patientId != null) {
+                  //       Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //           builder: (context) => PrescriptionListScreen(
+                  //             patientId: patientId ?? '',
+                  //           ),
+                  //         ),
+                  //       );
+                  //     } else {
+                  //       ScaffoldMessenger.of(context).showSnackBar(
+                  //         const SnackBar(
+                  //           content: Text('Failed to get patient ID'),
+                  //         ),
+                  //       );
+                  //     }
+                  //   },
+                  //   child: const _QuickAccessItem(
+                  //     label: 'Prescriptions',
+                  //     iconAsset: 'assets/icon/stats_2.png',
+                  //   ),
+                  // ),
                   InkWell(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PrescriptionListScreen(),
+                          builder: (context) => const PrescriptionListScreen(),
                         ),
                       );
                     },
@@ -451,6 +480,7 @@ class HomeScreen extends StatelessWidget {
                       iconAsset: 'assets/icon/stats_2.png',
                     ),
                   ),
+
                   InkWell(
                     onTap: () {
                       Navigator.push(
@@ -513,12 +543,12 @@ class HomeScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ProfileScreen(),
+                          builder: (context) => LabTestListScreen(),
                         ),
                       );
                     },
                     child: const _QuickAccessItem(
-                      label: 'Visit Plans',
+                      label: 'Lab Orders',
                       iconAsset: 'assets/icon/profile_2.png',
                     ),
                   ),

@@ -1,83 +1,25 @@
 import 'package:flutter/material.dart';
 import '../../Components/custom_bottom_nav.dart';
 import '../../Components/logout.dart';
-
-// Data Models
-class Prescription {
-  final String doctorName;
-  final String doctorPosition;
-  final String doctorPhoto;
-  final DateTime date;
-  final List<Medicine> medicines;
-
-  Prescription({
-    required this.doctorName,
-    required this.doctorPosition,
-    required this.doctorPhoto,
-    required this.date,
-    required this.medicines,
-  });
-}
-
-class Medicine {
-  final String name;
-  final String dosage;
-  final String duration;
-  final String frequency;
-  final String instructions;
-
-  Medicine({
-    required this.name,
-    required this.dosage,
-    required this.duration,
-    required this.frequency,
-    required this.instructions,
-  });
-}
+import '../../models/prescription.dart';
+import '../../services/prescription_service.dart';
 
 // 1️⃣ Prescription List Screen
-class PrescriptionListScreen extends StatelessWidget {
-  PrescriptionListScreen({super.key});
+class PrescriptionListScreen extends StatefulWidget {
+  const PrescriptionListScreen({super.key});
 
-  final List<Prescription> _prescriptions = [
-    Prescription(
-      doctorName: 'Dr. Fernando',
-      doctorPosition: 'Consultant Physician',
-      doctorPhoto: 'assets/doctor1.jpg',
-      date: DateTime.now().subtract(const Duration(days: 1)),
-      medicines: [
-        Medicine(
-          name: 'Paracetamol',
-          dosage: '500mg',
-          duration: '5 days',
-          frequency: '3 times/day',
-          instructions: 'After meals',
-        ),
-        Medicine(
-          name: 'Amoxicillin',
-          dosage: '250mg',
-          duration: '7 days',
-          frequency: '2 times/day',
-          instructions: 'Before meals',
-        ),
-      ],
-    ),
-    Prescription(
-      doctorName: 'Dr. Silva',
-      doctorPosition: 'General Practitioner',
-      doctorPhoto: 'assets/doctor2.jpg',
-      date: DateTime.now().subtract(const Duration(days: 3)),
-      medicines: [
-        Medicine(
-          name: 'Ibuprofen',
-          dosage: '400mg',
-          duration: '3 days',
-          frequency: '2 times/day',
-          instructions: 'After meals',
-        ),
-      ],
-    ),
-  ];
+  @override
+  State<PrescriptionListScreen> createState() => _PrescriptionListScreenState();
+}
+
+class _PrescriptionListScreenState extends State<PrescriptionListScreen> {
+  late Future<List<Prescription>> _futurePrescriptions;
+
+  @override
+  void initState() {
+    super.initState();
+    _futurePrescriptions = PrescriptionService.getPrescriptions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,37 +56,54 @@ class PrescriptionListScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: const CustomBottomNavBar(currentIndex: 3),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: _prescriptions.length,
-        itemBuilder: (context, index) {
-          final p = _prescriptions[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(12),
-              leading: CircleAvatar(
-                radius: 28,
-                backgroundImage: AssetImage(p.doctorPhoto),
-              ),
-              title: Text(
-                p.doctorName,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text('${p.date.toLocal()}'.split(' ')[0]),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => PrescriptionDetailScreen(prescription: p),
+      body: FutureBuilder<List<Prescription>>(
+        future: _futurePrescriptions,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('❌ ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No prescriptions found.'));
+          }
+
+          final prescriptions = snapshot.data!;
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: prescriptions.length,
+            itemBuilder: (context, index) {
+              final p = prescriptions[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(12),
+                  leading: CircleAvatar(
+                    radius: 28,
+                    backgroundImage: p.doctorPhoto.isNotEmpty
+                        ? NetworkImage(p.doctorPhoto)
+                        : const AssetImage('assets/default_doctor.jpg')
+                              as ImageProvider,
                   ),
-                );
-              },
-            ),
+                  title: Text(
+                    p.doctorName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('${p.date.toLocal()}'.split(' ')[0]),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PrescriptionDetailScreen(p: p),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),
@@ -154,9 +113,9 @@ class PrescriptionListScreen extends StatelessWidget {
 
 // 2️⃣ Prescription Detail Screen
 class PrescriptionDetailScreen extends StatelessWidget {
-  final Prescription prescription;
+  final Prescription p;
 
-  const PrescriptionDetailScreen({super.key, required this.prescription});
+  const PrescriptionDetailScreen({super.key, required this.p});
 
   @override
   Widget build(BuildContext context) {
@@ -177,45 +136,46 @@ class PrescriptionDetailScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundImage: AssetImage(prescription.doctorPhoto),
+                  backgroundImage: p.doctorPhoto.isNotEmpty
+                      ? NetworkImage(p.doctorPhoto)
+                      : const AssetImage('assets/default_doctor.jpg')
+                            as ImageProvider,
                 ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      prescription.doctorName,
+                      p.doctorName,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                     Text(
-                      prescription.doctorPosition,
+                      p.doctorPosition,
                       style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                   ],
                 ),
                 const Spacer(),
                 Text(
-                  '${prescription.date.toLocal()}'.split(' ')[0],
+                  '${p.date.toLocal()}'.split(' ')[0],
                   style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
             const SizedBox(height: 20),
-
             const Text(
               'Medicines',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-
             Expanded(
               child: ListView.builder(
-                itemCount: prescription.medicines.length,
+                itemCount: p.medicines.length,
                 itemBuilder: (context, index) {
-                  final m = prescription.medicines[index];
+                  final m = p.medicines[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 14),
                     child: Column(
